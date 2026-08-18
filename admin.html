@@ -5,9 +5,10 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<title>Admin Panel | J-AnimeX</title>
+<title>J-AnimeX Admin</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -20,7 +21,7 @@ box-sizing:border-box;
 body{
 margin:0;
 background:#09090f;
-color:white;
+color:#fff;
 font-family:Arial,sans-serif;
 }
 
@@ -42,7 +43,7 @@ color:#ff3b81;
 }
 
 .home{
-color:white;
+color:#fff;
 text-decoration:none;
 background:#242432;
 padding:10px 15px;
@@ -52,23 +53,23 @@ border-radius:8px;
 .container{
 max-width:700px;
 margin:auto;
-padding:40px 6%;
+padding:35px 6%;
 }
 
 .box{
 background:#15151f;
 padding:25px;
 border-radius:15px;
+margin-bottom:20px;
 }
 
-h1{
+h1,h2{
 margin-top:0;
 }
 
 label{
 display:block;
-margin-top:15px;
-margin-bottom:7px;
+margin:15px 0 7px;
 color:#ccc;
 }
 
@@ -80,43 +81,53 @@ border:0;
 outline:0;
 border-radius:8px;
 background:#242432;
-color:white;
+color:#fff;
 font-size:15px;
 }
 
 textarea{
-min-height:120px;
+min-height:110px;
 resize:vertical;
 }
 
 button{
 width:100%;
 padding:14px;
-margin-top:20px;
+margin-top:18px;
 border:0;
 border-radius:8px;
 background:#ff3b81;
-color:white;
+color:#fff;
 font-weight:bold;
 cursor:pointer;
 }
 
 button:disabled{
 opacity:.6;
-cursor:not-allowed;
 }
 
+#loginMessage,
 #message{
-margin-top:20px;
+margin-top:15px;
 text-align:center;
-line-height:1.6;
+line-height:1.5;
+}
+
+#adminPanel{
+display:none;
+}
+
+.logout{
+background:#444452;
 }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -124,42 +135,118 @@ line-height:1.6;
 J-<span>AnimeX</span>
 </div>
 
-<a class="home" href="index.html">
+<a
+class="home"
+href="index.html">
 ← Home
 </a>
 
 </header>
 
+
 <div class="container">
 
-<div class="box">
+
+<!-- LOGIN -->
+
+<div
+class="box"
+id="loginBox">
+
+<h2>🔐 Admin Login</h2>
+
+<p>
+Login with your Supabase account.
+</p>
+
+
+<label>
+Email
+</label>
+
+<input
+id="email"
+type="email"
+placeholder="Admin Email"
+autocomplete="email"
+>
+
+
+<label>
+Password
+</label>
+
+<input
+id="password"
+type="password"
+placeholder="Password"
+autocomplete="current-password"
+>
+
+
+<button
+id="loginButton"
+onclick="loginAdmin()">
+
+🔐 Login
+
+</button>
+
+
+<div
+id="loginMessage">
+</div>
+
+</div>
+
+
+
+<!-- ADMIN PANEL -->
+
+<div
+class="box"
+id="adminPanel">
 
 <h1>🛠️ Admin Panel</h1>
 
-<p>Add anime to J-AnimeX.</p>
+<p>
+Add anime to J-AnimeX.
+</p>
 
-<label>Anime Title</label>
+
+<label>
+Anime Title
+</label>
 
 <input
 id="title"
 placeholder="Example: Shadow Warrior X"
 >
 
-<label>Description</label>
+
+<label>
+Description
+</label>
 
 <textarea
 id="description"
 placeholder="Enter anime description">
 </textarea>
 
-<label>Genre</label>
+
+<label>
+Genre
+</label>
 
 <input
 id="genre"
 placeholder="Action, Adventure, Fantasy"
 >
 
-<label>Rating</label>
+
+<label>
+Rating
+</label>
 
 <input
 id="rating"
@@ -170,7 +257,10 @@ max="10"
 placeholder="8.5"
 >
 
-<label>Release Year</label>
+
+<label>
+Release Year
+</label>
 
 <input
 id="year"
@@ -178,7 +268,10 @@ type="number"
 placeholder="2026"
 >
 
-<label>Poster URL</label>
+
+<label>
+Poster URL
+</label>
 
 <input
 id="poster"
@@ -186,36 +279,18 @@ type="url"
 placeholder="https://example.com/poster.jpg"
 >
 
-<label>Legal Content URL</label>
+
+<label>
+Legal Content URL
+</label>
 
 <input
 id="content"
 type="url"
 placeholder="https://example.com/video.mp4"
 >
-<div id="loginBox">
 
-<h3>Admin Login</h3>
 
-<input
-id="email"
-type="email"
-placeholder="Admin Email"
->
-
-<input
-id="password"
-type="password"
-placeholder="Admin Password"
->
-
-<button onclick="loginAdmin()">
-🔐 Login
-</button>
-
-<div id="loginMessage"></div>
-
-</div>
 <button
 id="saveButton"
 onclick="saveAnime()">
@@ -224,64 +299,37 @@ onclick="saveAnime()">
 
 </button>
 
-<div id="message"></div>
 
+<button
+class="logout"
+onclick="logoutAdmin()">
+
+Logout
+
+</button>
+
+
+<div
+id="message">
 </div>
 
 </div>
+
+
+</div>
+
 
 <script>
-   async function loginAdmin(){
 
-const email =
-document.getElementById("email").value.trim();
-
-const password =
-document.getElementById("password").value;
-
-const loginMessage =
-document.getElementById("loginMessage");
-
-if(!email || !password){
-
-loginMessage.textContent =
-"❌ Email और Password भरें।";
-
-return;
-
-}
-
-const { error } =
-await supabaseClient.auth.signInWithPassword({
-email: email,
-password: password
-});
-
-if(error){
-
-loginMessage.textContent =
-"❌ " + error.message;
-
-return;
-
-}
-
-loginMessage.textContent =
-"✅ Admin login successful!";
-
-   }
 
 /* =========================
-   SUPABASE CONFIG
+   SUPABASE
    ========================= */
+
 
 const SUPABASE_URL =
 "https://oytrcupsefiwtasoqaik.supabase.co";
 
-/*
-Paste your Publishable key below.
-Do NOT use a Secret / Service Role key.
-*/
 
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
@@ -294,45 +342,256 @@ SUPABASE_PUBLISHABLE_KEY
 );
 
 
+
+/* =========================
+   CHECK LOGIN
+   ========================= */
+
+
+async function checkSession(){
+
+const {
+data:{
+session
+}
+} =
+await supabaseClient
+.auth
+.getSession();
+
+
+if(session){
+
+showAdminPanel();
+
+}
+
+}
+
+
+
+/* =========================
+   LOGIN
+   ========================= */
+
+
+async function loginAdmin(){
+
+const email =
+document.getElementById(
+"email"
+).value.trim();
+
+
+const password =
+document.getElementById(
+"password"
+).value;
+
+
+const loginMessage =
+document.getElementById(
+"loginMessage"
+);
+
+
+if(!email || !password){
+
+loginMessage.textContent =
+"❌ Email और Password भरें।";
+
+return;
+
+}
+
+
+const button =
+document.getElementById(
+"loginButton"
+);
+
+
+button.disabled = true;
+
+loginMessage.textContent =
+"Logging in...";
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.auth
+.signInWithPassword({
+
+email:email,
+
+password:password
+
+});
+
+
+if(error){
+
+loginMessage.textContent =
+"❌ " + error.message;
+
+button.disabled = false;
+
+return;
+
+}
+
+
+loginMessage.textContent =
+"✅ Login successful!";
+
+
+showAdminPanel();
+
+
+button.disabled = false;
+
+}
+
+
+
+/* =========================
+   SHOW ADMIN
+   ========================= */
+
+
+function showAdminPanel(){
+
+document.getElementById(
+"loginBox"
+).style.display =
+"none";
+
+
+document.getElementById(
+"adminPanel"
+).style.display =
+"block";
+
+}
+
+
+
+/* =========================
+   LOGOUT
+   ========================= */
+
+
+async function logoutAdmin(){
+
+await supabaseClient
+.auth
+.signOut();
+
+
+document.getElementById(
+"adminPanel"
+).style.display =
+"none";
+
+
+document.getElementById(
+"loginBox"
+).style.display =
+"block";
+
+
+document.getElementById(
+"loginMessage"
+).textContent =
+"Logged out.";
+
+}
+
+
+
 /* =========================
    SAVE ANIME
    ========================= */
 
+
 async function saveAnime(){
 
-const button =
-document.getElementById("saveButton");
-
 const message =
-document.getElementById("message");
+document.getElementById(
+"message"
+);
+
+
+const button =
+document.getElementById(
+"saveButton"
+);
+
+
+const {
+data:{
+session
+}
+} =
+await supabaseClient
+.auth
+.getSession();
+
+
+if(!session){
+
+message.textContent =
+"❌ Please login first.";
+
+return;
+
+}
+
 
 const title =
-document.getElementById("title")
-.value.trim();
+document.getElementById(
+"title"
+).value.trim();
+
 
 const description =
-document.getElementById("description")
-.value.trim();
+document.getElementById(
+"description"
+).value.trim();
+
 
 const genre =
-document.getElementById("genre")
-.value.trim();
+document.getElementById(
+"genre"
+).value.trim();
+
 
 const rating =
-document.getElementById("rating")
-.value;
+document.getElementById(
+"rating"
+).value;
+
 
 const year =
-document.getElementById("year")
-.value;
+document.getElementById(
+"year"
+).value;
+
 
 const poster =
-document.getElementById("poster")
-.value.trim();
+document.getElementById(
+"poster"
+).value.trim();
+
 
 const content =
-document.getElementById("content")
-.value.trim();
+document.getElementById(
+"content"
+).value.trim();
+
 
 
 if(!title){
@@ -344,6 +603,7 @@ return;
 
 }
 
+
 if(!poster){
 
 message.textContent =
@@ -352,6 +612,7 @@ message.textContent =
 return;
 
 }
+
 
 if(!content){
 
@@ -366,12 +627,12 @@ return;
 button.disabled = true;
 
 message.textContent =
-"Saving...";   
-alert("Button working");
+"Saving...";
 
-try{
 
-const { error } =
+const {
+error
+} =
 await supabaseClient
 .from("anime")
 .insert({
@@ -383,10 +644,14 @@ description:description,
 genre:genre,
 
 rating:
-rating ? Number(rating) : null,
+rating
+? Number(rating)
+: null,
 
 release_year:
-year ? Number(year) : null,
+year
+? Number(year)
+: null,
 
 poster_url:poster,
 
@@ -397,7 +662,15 @@ content_url:content
 
 if(error){
 
-throw error;
+console.error(error);
+
+message.textContent =
+"❌ Error: " +
+error.message;
+
+button.disabled = false;
+
+return;
 
 }
 
@@ -406,43 +679,56 @@ message.textContent =
 "✅ Anime saved to Supabase!";
 
 
-document.getElementById("title")
-.value = "";
-
-document.getElementById("description")
-.value = "";
-
-document.getElementById("genre")
-.value = "";
-
-document.getElementById("rating")
-.value = "";
-
-document.getElementById("year")
-.value = "";
-
-document.getElementById("poster")
-.value = "";
-
-document.getElementById("content")
-.value = "";
+document.getElementById(
+"title"
+).value = "";
 
 
-}catch(error){
+document.getElementById(
+"description"
+).value = "";
 
-console.error(error);
 
-message.textContent =
-"❌ Error: " + error.message;
+document.getElementById(
+"genre"
+).value = "";
 
-}
+
+document.getElementById(
+"rating"
+).value = "";
+
+
+document.getElementById(
+"year"
+).value = "";
+
+
+document.getElementById(
+"poster"
+).value = "";
+
+
+document.getElementById(
+"content"
+).value = "";
 
 
 button.disabled = false;
 
 }
 
+
+
+/* =========================
+   START
+   ========================= */
+
+
+checkSession();
+
 </script>
+
 
 </body>
 
