@@ -193,7 +193,29 @@ id="content"
 type="url"
 placeholder="https://example.com/video.mp4"
 >
+<div id="loginBox">
 
+<h3>Admin Login</h3>
+
+<input
+id="email"
+type="email"
+placeholder="Admin Email"
+>
+
+<input
+id="password"
+type="password"
+placeholder="Admin Password"
+>
+
+<button onclick="loginAdmin()">
+🔐 Login
+</button>
+
+<div id="loginMessage"></div>
+
+</div>
 <button
 id="saveButton"
 onclick="saveAnime()">
@@ -209,6 +231,45 @@ onclick="saveAnime()">
 </div>
 
 <script>
+   async function loginAdmin(){
+
+const email =
+document.getElementById("email").value.trim();
+
+const password =
+document.getElementById("password").value;
+
+const loginMessage =
+document.getElementById("loginMessage");
+
+if(!email || !password){
+
+loginMessage.textContent =
+"❌ Email और Password भरें।";
+
+return;
+
+}
+
+const { error } =
+await supabaseClient.auth.signInWithPassword({
+email: email,
+password: password
+});
+
+if(error){
+
+loginMessage.textContent =
+"❌ " + error.message;
+
+return;
+
+}
+
+loginMessage.textContent =
+"✅ Admin login successful!";
+
+   }
 
 /* =========================
    SUPABASE CONFIG
