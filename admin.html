@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Admin Panel | J-AnimeX</title>
 
@@ -104,6 +103,7 @@ cursor:pointer;
 
 button:disabled{
 opacity:.6;
+cursor:not-allowed;
 }
 
 #message{
@@ -124,14 +124,11 @@ line-height:1.6;
 J-<span>AnimeX</span>
 </div>
 
-<a
-class="home"
-href="index.html">
+<a class="home" href="index.html">
 ← Home
 </a>
 
 </header>
-
 
 <div class="container">
 
@@ -141,13 +138,12 @@ href="index.html">
 
 <p>Add anime to J-AnimeX.</p>
 
-
 <label>Anime Title</label>
 
 <input
 id="title"
-placeholder="Example: Shadow Warrior X">
-
+placeholder="Example: Shadow Warrior X"
+>
 
 <label>Description</label>
 
@@ -156,13 +152,12 @@ id="description"
 placeholder="Enter anime description">
 </textarea>
 
-
 <label>Genre</label>
 
 <input
 id="genre"
-placeholder="Action, Adventure, Fantasy">
-
+placeholder="Action, Adventure, Fantasy"
+>
 
 <label>Rating</label>
 
@@ -172,32 +167,32 @@ type="number"
 step="0.1"
 min="0"
 max="10"
-placeholder="8.5">
-
+placeholder="8.5"
+>
 
 <label>Release Year</label>
 
 <input
 id="year"
 type="number"
-placeholder="2026">
-
+placeholder="2026"
+>
 
 <label>Poster URL</label>
 
 <input
 id="poster"
 type="url"
-placeholder="https://example.com/poster.jpg">
-
+placeholder="https://example.com/poster.jpg"
+>
 
 <label>Legal Content URL</label>
 
 <input
 id="content"
 type="url"
-placeholder="https://example.com/video.mp4">
-
+placeholder="https://example.com/video.mp4"
+>
 
 <button
 id="saveButton"
@@ -207,13 +202,11 @@ onclick="saveAnime()">
 
 </button>
 
-
 <div id="message"></div>
 
 </div>
 
 </div>
-
 
 <script>
 
@@ -222,10 +215,15 @@ onclick="saveAnime()">
    ========================= */
 
 const SUPABASE_URL =
-https://oytrcupsefiwtasoqaik.supabase.co/rest/v1/
+"https://oytrcupsefiwtasoqaik.supabase.co";
+
+/*
+Paste your Publishable key below.
+Do NOT use a Secret / Service Role key.
+*/
 
 const SUPABASE_PUBLISHABLE_KEY =
-sb_publishable_cKvpXe8BQn39574XD-8LvA_qwNvXIVN
+"sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
 
 
 const supabaseClient =
@@ -246,7 +244,6 @@ document.getElementById("saveButton");
 
 const message =
 document.getElementById("message");
-
 
 const title =
 document.getElementById("title")
@@ -286,7 +283,6 @@ return;
 
 }
 
-
 if(!poster){
 
 message.textContent =
@@ -295,7 +291,6 @@ message.textContent =
 return;
 
 }
-
 
 if(!content){
 
@@ -313,7 +308,9 @@ message.textContent =
 "Saving...";
 
 
-const { data, error } =
+try{
+
+const { error } =
 await supabaseClient
 .from("anime")
 .insert({
@@ -334,21 +331,12 @@ poster_url:poster,
 
 content_url:content
 
-})
-.select();
+});
 
 
 if(error){
 
-console.error(error);
-
-message.textContent =
-"❌ Error: " +
-error.message;
-
-button.disabled = false;
-
-return;
+throw error;
 
 }
 
@@ -377,6 +365,16 @@ document.getElementById("poster")
 
 document.getElementById("content")
 .value = "";
+
+
+}catch(error){
+
+console.error(error);
+
+message.textContent =
+"❌ Error: " + error.message;
+
+}
 
 
 button.disabled = false;
