@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Watch | J-AnimeX</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+background:#09090f;
+color:white;
+font-family:Arial,sans-serif;
+}
+
+header{
+padding:18px 6%;
+background:#11111a;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ff3b81;
+}
+
+.back{
+color:white;
+text-decoration:none;
+background:#242432;
+padding:10px 15px;
+border-radius:8px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:35px 6%;
+}
+
+.video-box{
+background:#000;
+border-radius:14px;
+overflow:hidden;
+}
+
+video{
+width:100%;
+display:block;
+max-height:600px;
+}
+
+h1{
+margin-top:25px;
+font-size:35px;
+}
+
+.description{
+color:#aaa;
+line-height:1.8;
+}
+
+.btn{
+display:inline-block;
+padding:12px 18px;
+margin-top:15px;
+margin-right:8px;
+border:0;
+border-radius:8px;
+background:#ff3b81;
+color:white;
+text-decoration:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+.secondary{
+background:#242432;
+}
+
+.note{
+margin-top:25px;
+padding:18px;
+background:#15151f;
+border-radius:10px;
+color:#aaa;
+line-height:1.6;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="logo">
+J-<span>AnimeX</span>
+</div>
+
+<a
+class="back"
+href="index.html">
+← Home
+</a>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="video-box">
+
+<!--
+Add your own, licensed, or legally
+permitted video URL in the src below.
+-->
+
+<video
+controls
+poster="">
+
+<source
+src=""
+type="video/mp4">
+
+Your browser does not support
+video playback.
+
+</video>
+
+</div>
+
+
+<h1 id="title">
+Loading...
+</h1>
+
+
+<p
+class="description"
+id="description">
+</p>
+
+
+<a
+class="btn secondary"
+href="index.html">
+← Back to Home
+</a>
+
+
+<button
+class="btn"
+onclick="addWatchlist()">
+❤️ Add to Watchlist
+</button>
+
+
+<div class="note">
+
+<strong>Important:</strong>
+
+This player is intended only for
+original, licensed, or legally
+permitted video content.
+
+</div>
+
+
+</main>
+
+
+<script>
+
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+
+const anime =
+params.get("anime");
+
+
+const data = {
+
+"Naruto":{
+description:
+"Anime information and legally permitted video content."
+},
+
+"One Piece":{
+description:
+"Anime information and legally permitted video content."
+},
+
+"Demon Slayer":{
+description:
+"Anime information and legally permitted video content."
+},
+
+"Jujutsu Kaisen":{
+description:
+"Anime information and legally permitted video content."
+}
+
+};
+
+
+const info =
+data[anime] || {
+
+description:
+"Information coming soon."
+
+};
+
+
+document.getElementById(
+"title"
+).textContent =
+anime || "Anime";
+
+
+document.getElementById(
+"description"
+).textContent =
+info.description;
+
+
+function addWatchlist(){
+
+if(!anime){
+
+return;
+
+}
+
+localStorage.setItem(
+"JAnimeX_Watchlist",
+anime
+);
+
+alert(
+anime +
+" added to your watchlist ❤️"
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
