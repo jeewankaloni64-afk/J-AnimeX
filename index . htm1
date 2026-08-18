@@ -1,0 +1,312 @@
+TYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>J-AnimeX — Anime Adventure Starts Here</title>
+  <meta name="description" content="J-AnimeX - Discover anime, trending titles, reviews, AI-powered original stories and your personal watchlist.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #09090f;
+      color: white;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 6%;
+      background: #11111a;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff3b81;
+    }
+
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #ff3b81;
+    }
+
+    .hero {
+      min-height: 430px;
+      display: flex;
+      align-items: center;
+      padding: 60px 6%;
+      background:
+        linear-gradient(90deg, #09090f 20%, transparent),
+        linear-gradient(0deg, #09090f, transparent);
+    }
+
+    .hero-content {
+      max-width: 650px;
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      margin-bottom: 15px;
+    }
+
+    .hero h1 span {
+      color: #ff3b81;
+    }
+
+    .hero p {
+      color: #bbb;
+      line-height: 1.7;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 13px 22px;
+      border-radius: 8px;
+      background: #ff3b81;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .btn.secondary {
+      background: #252532;
+    }
+
+    section {
+      padding: 45px 6%;
+    }
+
+    .section-title {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    .search {
+      width: 100%;
+      max-width: 600px;
+      padding: 15px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      background: #191923;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: #15151f;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform .2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .poster {
+      height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #272735;
+      font-size: 45px;
+    }
+
+    .card-info {
+      padding: 15px;
+    }
+
+    .card h3 {
+      margin-bottom: 7px;
+    }
+
+    .rating {
+      color: #ffd166;
+      font-size: 14px;
+    }
+
+    .category {
+      display: inline-block;
+      background: #20202c;
+      padding: 10px 16px;
+      border-radius: 20px;
+      margin: 5px;
+      color: #ddd;
+    }
+
+    .ai-box {
+      background: linear-gradient(135deg, #171725, #241526);
+      padding: 35px;
+      border-radius: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      background: #11111a;
+      color: #888;
+    }
+
+    @media (max-width: 700px) {
+      nav {
+        display: none;
+      }
+
+      .hero {
+        min-height: 380px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">J-<span>AnimeX</span></div>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#trending">Trending</a>
+    <a href="#categories">Categories</a>
+    <a href="#ai">AI Anime</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Welcome to <span>J-AnimeX</span></h1>
+
+    <p>
+      Discover amazing anime, explore trending titles,
+      read reviews and create original AI-powered anime stories.
+    </p>
+
+    <a href="#trending" class="btn">Explore Anime</a>
+    <a href="#ai" class="btn secondary">AI Anime</a>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">🔎 Search Anime</h2>
+
+  <input
+    class="search"
+    id="search"
+    type="text"
+    placeholder="Search anime..."
+    onkeyup="searchAnime()"
+  >
+</section>
+
+<section id="trending">
+  <h2 class="section-title">🔥 Trending Anime</h2>
+
+  <div class="grid" id="animeGrid">
+
+    <div class="card" data-name="Anime Adventure">
+      <div class="poster">🎬</div>
+      <div class="card-info">
+        <h3>Anime Adventure</h3>
+        <div class="rating">⭐ 9.1/10</div>
+      </div>
+    </div>
+
+    <div class="card" data-name="Cyber Samurai">
+      <div class="poster">⚔️</div>
+      <div class="card-info">
+        <h3>Cyber Samurai</h3>
+        <div class="rating">⭐ 8.8/10</div>
+      </div>
+    </div>
+
+    <div class="card" data-name="Sky Warriors">
+      <div class="poster">☁️</div>
+      <div class="card-info">
+        <h3>Sky Warriors</h3>
+        <div class="rating">⭐ 8.7/10</div>
+      </div>
+    </div>
+
+    <div class="card" data-name="Moon Hunter">
+      <div class="poster">🌙</div>
+      <div class="card-info">
+        <h3>Moon Hunter</h3>
+        <div class="rating">⭐ 8.5/10</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="categories">
+  <h2 class="section-title">🎭 Categories</h2>
+
+  <span class="category">Action</span>
+  <span class="category">Adventure</span>
+  <span class="category">Fantasy</span>
+  <span class="category">Romance</span>
+  <span class="category">Comedy</span>
+  <span class="category">Sci-Fi</span>
+</section>
+
+<section id="ai">
+  <div class="ai-box">
+    <h2>🤖 AI Anime Studio</h2>
+
+    <p style="margin:15px 0;color:#bbb;">
+      Create original anime stories, characters and concepts
+      with AI on J-AnimeX.
+    </p>
+
+    <a href="#" class="btn">Coming Soon</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 J-AnimeX. All rights reserved.</p>
+  <p style="margin-top:8px;">
+    Original, licensed and legally permitted content only.
+  </p>
+</footer>
+
+<script>
+  function searchAnime() {
+    const input = document
+      .getElementById("search")
+      .value
+      .toLowerCase();
+
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach(card => {
+      const n
