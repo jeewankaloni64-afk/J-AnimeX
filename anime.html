@@ -204,11 +204,12 @@ onclick="addWatchlist()">
 </button>
 
 
-<button
+<a
 class="btn"
-onclick="watchAnime()">
+id="watchButton"
+href="#">
 ▶ Watch
-</button>
+</a>
 
 
 </div>
@@ -394,6 +395,19 @@ document.getElementById(
 
 
 
+/*
+Connect the Watch button
+to the watch page.
+*/
+
+document.getElementById(
+"watchButton"
+).href =
+"watch.html?anime=" +
+encodeURIComponent(anime);
+
+
+
 function addWatchlist(){
 
 if(!anime){
@@ -412,17 +426,6 @@ document.getElementById(
 ).textContent =
 "❤️ " + anime +
 " added to your watchlist!";
-
-}
-
-
-
-function watchAnime(){
-
-document.getElementById(
-"message"
-).textContent =
-"▶ Watch feature is available only for original, licensed, or legally permitted content.";
 
 }
 
