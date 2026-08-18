@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Watchlist | J-AnimeX</title>
+
+<style>
+body{
+margin:0;
+background:#09090f;
+color:white;
+font-family:Arial,sans-serif;
+}
+
+header{
+padding:20px 6%;
+background:#11111a;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ff3b81;
+}
+
+.container{
+padding:50px 6%;
+max-width:900px;
+margin:auto;
+}
+
+.item{
+background:#15151f;
+padding:20px;
+border-radius:12px;
+margin:15px 0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+button{
+background:#ff3b81;
+border:0;
+color:white;
+padding:10px 15px;
+border-radius:7px;
+cursor:pointer;
+}
+
+.home{
+display:inline-block;
+margin-bottom:25px;
+color:#ff3b81;
+text-decoration:none;
+}
+
+.empty{
+color:#999;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+J-<span>AnimeX</span>
+</div>
+
+</header>
+
+<div class="container">
+
+<a class="home" href="index.html">
+← Back to Home
+</a>
+
+<h1>❤️ My Watchlist</h1>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+
+const list =
+document.getElementById("list");
+
+const saved =
+localStorage.getItem("JAnimeX_Watchlist");
+
+if(saved){
+
+list.innerHTML = `
+<div class="item">
+
+<strong>${saved}</strong>
+
+<button onclick="removeAnime()">
+Remove
+</button>
+
+</div>
+`;
+
+}else{
+
+list.innerHTML =
+'<p class="empty">Your watchlist is empty.</p>';
+
+}
+
+function removeAnime(){
+
+localStorage.removeItem(
+"JAnimeX_Watchlist"
+);
+
+location.reload();
+
+}
+
+</script>
+
+</body>
+</html>
