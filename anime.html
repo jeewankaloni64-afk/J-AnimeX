@@ -1,26 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anime Details — J-AnimeX</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Anime Details | J-AnimeX</title>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#09090f;
+color:white;
+}
+
+header{
+padding:18px 6%;
+background:#11111a;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ff3b81;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:50px 6%;
+}
+
+.anime{
+display:grid;
+grid-template-columns:280px 1fr;
+gap:35px;
+align-items:start;
+}
+
+.poster{
+height:390px;
+border-radius:15px;
+background:#252532;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:90px;
+}
+
+h1{
+font-size:45px;
+margin-bottom:12px;
+}
+
+.rating{
+color:#ffd166;
+margin:12px 0;
+}
+
+.genre{
+color:#ff3b81;
+margin-bottom:20px;
+}
+
+.description{
+color:#bbb;
+line-height:1.8;
+margin-bottom:25px;
+}
+
+.btn{
+display:inline-block;
+padding:13px 20px;
+background:#ff3b81;
+color:white;
+text-decoration:none;
+border-radius:8px;
+margin-right:8px;
+border:0;
+cursor:pointer;
+font-weight:bold;
+}
+
+.secondary{
+background:#242432;
+}
+
+.info{
+margin-top:35px;
+padding:25px;
+background:#15151f;
+border-radius:12px;
+}
+
+.info p{
+margin:10px 0;
+color:#bbb;
+}
+
+@media(max-width:700px){
+.anime{
+grid-template-columns:1fr;
+}
+
+.poster{
+height:300px;
+}
+
+h1{
+font-size:35px;
+}
+}
+</style>
 </head>
 
 <body>
 
-  <h1>J-AnimeX</h1>
+<header>
+<div class="logo">
+J-<span>AnimeX</span>
+</div>
+</header>
 
-  <h2>Anime Details</h2>
+<main class="container">
 
-  <p>Welcome to the anime details page.</p>
+<div class="anime">
 
-  <h3>About</h3>
-  <p>
-    This page will contain information about original,
-    licensed, or legally permitted anime content.
-  </p>
+<div class="poster">
+🎬
+</div>
 
-  <a href="index.html">← Back to Home</a>
+<div>
+
+<h1>Anime Adventure</h1>
+
+<div class="rating">
+⭐ 9.1 / 10
+</div>
+
+<div class="genre">
+Action • Adventure • Fantasy
+</div>
+
+<p class="description">
+An original anime adventure following a young hero
+who discovers a mysterious power and begins an
+unforgettable journey.
+</p>
+
+<button class="btn" onclick="addWatchlist()">
+❤️ Add to Watchlist
+</button>
+
+<a class="btn secondary" href="index.html">
+← Home
+</a>
+
+</div>
+
+</div>
+
+<div class="info">
+
+<h2>Anime Information</h2>
+
+<p><strong>Status:</strong> Ongoing</p>
+<p><strong>Year:</strong> 2026</p>
+<p><strong>Episodes:</strong> Coming Soon</p>
+<p><strong>Language:</strong> English</p>
+
+</div>
+
+</main>
+
+<script>
+
+function addWatchlist(){
+
+localStorage.setItem(
+"JAnimeX_Watchlist",
+"Anime Adventure"
+);
+
+alert("Added to your watchlist ❤️");
+
+}
+
+</script>
 
 </body>
 </html>
