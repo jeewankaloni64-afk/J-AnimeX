@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin Panel | J-AnimeX</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+background:#09090f;
+color:white;
+font-family:Arial,sans-serif;
+}
+
+header{
+padding:18px 6%;
+background:#11111a;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ff3b81;
+}
+
+.home{
+color:white;
+text-decoration:none;
+background:#242432;
+padding:10px 15px;
+border-radius:8px;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+padding:40px 6%;
+}
+
+.box{
+background:#15151f;
+padding:25px;
+border-radius:15px;
+}
+
+h1{
+margin-top:0;
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:7px;
+color:#ccc;
+}
+
+input,
+textarea,
+select{
+
+width:100%;
+padding:13px;
+border:0;
+outline:0;
+border-radius:8px;
+background:#242432;
+color:white;
+font-size:15px;
+
+}
+
+textarea{
+min-height:120px;
+resize:vertical;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:0;
+border-radius:8px;
+background:#ff3b81;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+#message{
+margin-top:20px;
+color:#aaa;
+text-align:center;
+line-height:1.6;
+}
+
+.warning{
+margin-top:25px;
+padding:15px;
+background:#242432;
+border-radius:10px;
+color:#aaa;
+line-height:1.6;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="logo">
+J-<span>AnimeX</span>
+</div>
+
+<a
+class="home"
+href="index.html">
+← Home
+</a>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="box">
+
+<h1>
+🛠️ Admin Panel
+</h1>
+
+<p>
+Add anime information to your local demo catalog.
+</p>
+
+
+<label>
+Anime Title
+</label>
+
+<input
+id="title"
+placeholder="Example: Shadow Warrior X"
+>
+
+
+<label>
+Description
+</label>
+
+<textarea
+id="description"
+placeholder="Enter anime description">
+</textarea>
+
+
+<label>
+Genre
+</label>
+
+<input
+id="genre"
+placeholder="Action, Adventure, Fantasy"
+>
+
+
+<label>
+Rating
+</label>
+
+<input
+id="rating"
+type="number"
+step="0.1"
+min="0"
+max="10"
+placeholder="8.5"
+>
+
+
+<label>
+Release Year
+</label>
+
+<input
+id="year"
+type="number"
+placeholder="2026"
+>
+
+
+<label>
+Poster URL
+</label>
+
+<input
+id="poster"
+type="url"
+placeholder="https://example.com/poster.jpg"
+>
+
+
+<label>
+Legal Content URL
+</label>
+
+<input
+id="content"
+type="url"
+placeholder="https://example.com/video"
+>
+
+
+<button
+onclick="saveAnime()">
+
+💾 Save Anime
+
+</button>
+
+
+<div
+id="message">
+</div>
+
+
+<div class="warning">
+
+<strong>Important:</strong>
+
+This is only a local demo admin panel.
+Do not put copyrighted anime download
+links here. Use only content that you
+own, license, or are legally permitted
+to distribute.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+function saveAnime(){
+
+
+const title =
+document.getElementById("title").value.trim();
+
+
+const description =
+document.getElementById("description").value.trim();
+
+
+const genre =
+document.getElementById("genre").value.trim();
+
+
+const rating =
+document.getElementById("rating").value;
+
+
+const year =
+document.getElementById("year").value;
+
+
+const poster =
+document.getElementById("poster").value.trim();
+
+
+const content =
+document.getElementById("content").value.trim();
+
+
+
+if(!title){
+
+showMessage(
+"Please enter an anime title."
+);
+
+return;
+
+}
+
+
+const anime = {
+
+title:title,
+
+description:description,
+
+genre:genre,
+
+rating:rating,
+
+year:year,
+
+poster:poster,
+
+content:content
+
+};
+
+
+localStorage.setItem(
+"JAnimeX_AdminAnime",
+JSON.stringify(anime)
+);
+
+
+showMessage(
+"✅ Anime saved successfully on this browser!"
+);
+
+}
+
+
+function showMessage(text){
+
+document.getElementById(
+"message"
+).textContent = text;
+
+}
+
+</script>
+
+
+</body>
+
+</html>
