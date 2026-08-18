@@ -2,25 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Anime Details | J-AnimeX</title>
+<title>J-AnimeX Anime Details</title>
 
 <style>
-*{
-box-sizing:border-box;
+body{
 margin:0;
-padding:0;
+background:#09090f;
+color:white;
 font-family:Arial,sans-serif;
 }
 
-body{
-background:#09090f;
-color:white;
-}
-
 header{
-padding:18px 6%;
+padding:20px 6%;
 background:#11111a;
 }
 
@@ -39,42 +34,45 @@ margin:auto;
 padding:50px 6%;
 }
 
-.anime{
-display:grid;
-grid-template-columns:280px 1fr;
-gap:35px;
-align-items:start;
-}
-
 .poster{
-height:390px;
+height:350px;
+background:#242432;
 border-radius:15px;
-background:#252532;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:90px;
+font-size:100px;
+margin-bottom:30px;
 }
 
 h1{
 font-size:45px;
-margin-bottom:12px;
 }
 
 .rating{
 color:#ffd166;
-margin:12px 0;
+font-size:20px;
 }
 
 .genre{
 color:#ff3b81;
-margin-bottom:20px;
+margin:15px 0;
 }
 
 .description{
 color:#bbb;
 line-height:1.8;
-margin-bottom:25px;
+}
+
+.info{
+margin-top:30px;
+padding:25px;
+background:#15151f;
+border-radius:12px;
+}
+
+.info p{
+color:#bbb;
 }
 
 .btn{
@@ -84,40 +82,14 @@ background:#ff3b81;
 color:white;
 text-decoration:none;
 border-radius:8px;
+margin-top:15px;
 margin-right:8px;
 border:0;
 cursor:pointer;
-font-weight:bold;
 }
 
-.secondary{
+.back{
 background:#242432;
-}
-
-.info{
-margin-top:35px;
-padding:25px;
-background:#15151f;
-border-radius:12px;
-}
-
-.info p{
-margin:10px 0;
-color:#bbb;
-}
-
-@media(max-width:700px){
-.anime{
-grid-template-columns:1fr;
-}
-
-.poster{
-height:300px;
-}
-
-h1{
-font-size:35px;
-}
 }
 </style>
 </head>
@@ -130,67 +102,131 @@ J-<span>AnimeX</span>
 </div>
 </header>
 
-<main class="container">
+<div class="container">
 
-<div class="anime">
-
-<div class="poster">
+<div class="poster" id="poster">
 🎬
 </div>
 
-<div>
+<h1 id="title">Loading...</h1>
 
-<h1>Anime Adventure</h1>
+<div class="rating" id="rating"></div>
 
-<div class="rating">
-⭐ 9.1 / 10
-</div>
+<div class="genre" id="genre"></div>
 
-<div class="genre">
-Action • Adventure • Fantasy
-</div>
-
-<p class="description">
-An original anime adventure following a young hero
-who discovers a mysterious power and begins an
-unforgettable journey.
-</p>
+<p class="description" id="description"></p>
 
 <button class="btn" onclick="addWatchlist()">
 ❤️ Add to Watchlist
 </button>
 
-<a class="btn secondary" href="index.html">
+<a class="btn back" href="index.html">
 ← Home
 </a>
-
-</div>
-
-</div>
 
 <div class="info">
 
 <h2>Anime Information</h2>
 
-<p><strong>Status:</strong> Ongoing</p>
-<p><strong>Year:</strong> 2026</p>
-<p><strong>Episodes:</strong> Coming Soon</p>
-<p><strong>Language:</strong> English</p>
+<p id="year"></p>
+<p id="status"></p>
+<p id="episodes"></p>
 
 </div>
 
-</main>
+</div>
 
 <script>
+
+const params =
+new URLSearchParams(window.location.search);
+
+const anime =
+params.get("anime");
+
+const data = {
+
+"Naruto":{
+rating:"⭐ 8.8 / 10",
+genre:"Action • Adventure",
+description:"Naruto is a fictional anime series about ninjas, friendship, determination and adventure.",
+year:"2002",
+status:"Completed",
+episodes:"220"
+},
+
+"One Piece":{
+rating:"⭐ 9.0 / 10",
+genre:"Adventure • Fantasy",
+description:"One Piece is a fictional pirate adventure series featuring a long journey across the seas.",
+year:"1999",
+status:"Ongoing",
+episodes:"1000+"
+},
+
+"Demon Slayer":{
+rating:"⭐ 8.6 / 10",
+genre:"Action • Fantasy",
+description:"Demon Slayer is a fictional fantasy adventure about a young swordsman and his journey.",
+year:"2019",
+status:"Ongoing",
+episodes:"Multiple seasons"
+},
+
+"Jujutsu Kaisen":{
+rating:"⭐ 8.5 / 10",
+genre:"Action • Supernatural",
+description:"Jujutsu Kaisen is a fictional supernatural action series involving cursed energy and battles.",
+year:"2020",
+status:"Ongoing",
+episodes:"Multiple seasons"
+}
+
+};
+
+const info =
+data[anime] || {
+rating:"⭐ New",
+genre:"Anime",
+description:"Information coming soon.",
+year:"2026",
+status:"Coming Soon",
+episodes:"Coming Soon"
+};
+
+document.getElementById("title").textContent =
+anime || "Anime";
+
+document.getElementById("rating").textContent =
+info.rating;
+
+document.getElementById("genre").textContent =
+info.genre;
+
+document.getElementById("description").textContent =
+info.description;
+
+document.getElementById("year").textContent =
+"Year: " + info.year;
+
+document.getElementById("status").textContent =
+"Status: " + info.status;
+
+document.getElementById("episodes").textContent =
+"Episodes: " + info.episodes;
+
 
 function addWatchlist(){
 
 localStorage.setItem(
 "JAnimeX_Watchlist",
-"Anime Adventure"
+anime
 );
 
-alert("Added to your watchlist ❤️");
+alert(
+(anime || "Anime") +
+" added to your watchlist ❤️"
+);
 
 }
 
