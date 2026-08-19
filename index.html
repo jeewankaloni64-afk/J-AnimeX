@@ -8,7 +8,57 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>J-AnimeX</title>
+<title>J-AnimeX - Discover Your Next Anime</title>
+
+<meta
+name="description"
+content="J-AnimeX - Discover anime, browse genres, explore episodes and build your personal watchlist."
+>
+
+<meta
+name="robots"
+content="index, follow"
+>
+
+<link
+rel="canonical"
+href="https://YOUR-DOMAIN.com/"
+>
+
+<meta
+property="og:title"
+content="J-AnimeX - Discover Your Next Anime"
+>
+
+<meta
+property="og:description"
+content="Discover anime, episodes, genres and build your personal watchlist on J-AnimeX."
+>
+
+<meta
+property="og:type"
+content="website"
+>
+
+<meta
+property="og:url"
+content="https://YOUR-DOMAIN.com/"
+>
+
+<meta
+name="twitter:card"
+content="summary"
+>
+
+<meta
+name="twitter:title"
+content="J-AnimeX - Discover Your Next Anime"
+>
+
+<meta
+name="twitter:description"
+content="Discover anime, episodes, genres and build your personal watchlist on J-AnimeX."
+>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -373,8 +423,6 @@ Discover your next anime adventure.
 
 
 
-<!-- SEARCH + ANIME -->
-
 <section id="anime">
 
 <div class="section-title">
@@ -423,8 +471,6 @@ Loading anime...
 
 
 
-<!-- LATEST EPISODES -->
-
 <section id="latestEpisodes">
 
 <div class="section-title">
@@ -449,8 +495,6 @@ Loading episodes...
 </section>
 
 
-
-<!-- CATEGORIES -->
 
 <section id="categories">
 
@@ -540,10 +584,6 @@ All
 <script>
 
 
-/* =========================
-   SUPABASE
-   ========================= */
-
 const SUPABASE_URL =
 "https://oytrcupsefiwtasoqaik.supabase.co";
 
@@ -563,10 +603,6 @@ let allAnime = [];
 
 
 
-/* =========================
-   MOBILE MENU
-   ========================= */
-
 function toggleMenu(){
 
 const nav =
@@ -577,10 +613,6 @@ nav.classList.toggle("active");
 }
 
 
-
-/* =========================
-   ACCOUNT LINK
-   ========================= */
 
 async function updateAccountLink(){
 
@@ -625,10 +657,6 @@ link.textContent =
 }
 
 
-
-/* =========================
-   LOAD ANIME
-   ========================= */
 
 async function loadAnime(){
 
@@ -687,10 +715,6 @@ allAnime
 }
 
 
-
-/* =========================
-   RENDER ANIME
-   ========================= */
 
 function renderAnime(
 animeList
@@ -843,10 +867,6 @@ card
 
 
 
-/* =========================
-   SEARCH
-   ========================= */
-
 function searchAnime(){
 
 const input =
@@ -897,10 +917,6 @@ filtered
 
 
 
-/* =========================
-   FILTER GENRE
-   ========================= */
-
 function filterGenre(
 genre
 ){
@@ -936,10 +952,6 @@ behavior:"smooth"
 
 
 
-/* =========================
-   SHOW ALL
-   ========================= */
-
 function showAllAnime(){
 
 renderAnime(
@@ -957,10 +969,6 @@ behavior:"smooth"
 
 
 
-/* =========================
-   OPEN ANIME
-   ========================= */
-
 function openAnime(
 id
 ){
@@ -972,10 +980,6 @@ encodeURIComponent(id);
 }
 
 
-
-/* =========================
-   LOAD LATEST EPISODES
-   ========================= */
 
 async function loadLatestEpisodes(){
 
@@ -1064,8 +1068,14 @@ card.className =
 card.onclick =
 function(){
 
-openAnime(
+window.location.href =
+"watch.html?id=" +
+encodeURIComponent(
 anime.id
+) +
+"&episode=" +
+encodeURIComponent(
+episode.id
 );
 
 };
@@ -1177,10 +1187,6 @@ card
 
 
 
-/* =========================
-   CLOSE MOBILE MENU
-   ========================= */
-
 document.querySelectorAll(
 ".nav a"
 )
@@ -1204,10 +1210,6 @@ document
 });
 
 
-
-/* =========================
-   START
-   ========================= */
 
 updateAccountLink();
 
