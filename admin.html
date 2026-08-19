@@ -74,7 +74,8 @@ color:#ccc;
 }
 
 input,
-textarea{
+textarea,
+select{
 width:100%;
 padding:13px;
 border:0;
@@ -107,7 +108,8 @@ opacity:.6;
 }
 
 #loginMessage,
-#message{
+#message,
+#episodeMessage{
 margin-top:15px;
 text-align:center;
 line-height:1.5;
@@ -125,7 +127,8 @@ background:#444452;
    ANIME LIST
    ========================= */
 
-.anime-item{
+.anime-item,
+.episode-item{
 background:#242432;
 padding:15px;
 border-radius:10px;
@@ -143,12 +146,13 @@ margin-right:15px;
 background:#111;
 }
 
-.anime-item h3{
+.anime-item h3,
+.episode-item h3{
 margin:0 0 8px;
 font-size:18px;
 }
 
-.anime-info{
+.info{
 color:#bbb;
 font-size:14px;
 line-height:1.7;
@@ -167,6 +171,12 @@ clear:both;
 text-align:center;
 color:#aaa;
 padding:20px 0;
+}
+
+.divider{
+height:1px;
+background:#2b2b38;
+margin:25px 0;
 }
 
 </style>
@@ -209,7 +219,6 @@ id="loginBox">
 Login with your Supabase account.
 </p>
 
-
 <label>
 Email
 </label>
@@ -220,7 +229,6 @@ type="email"
 placeholder="Admin Email"
 autocomplete="email"
 >
-
 
 <label>
 Password
@@ -233,7 +241,6 @@ placeholder="Password"
 autocomplete="current-password"
 >
 
-
 <button
 id="loginButton"
 onclick="loginAdmin()">
@@ -241,7 +248,6 @@ onclick="loginAdmin()">
 🔐 Login
 
 </button>
-
 
 <div
 id="loginMessage">
@@ -262,9 +268,15 @@ id="adminPanel">
 <h1>🛠️ Admin Panel</h1>
 
 <p>
-Add anime to J-AnimeX.
+Manage J-AnimeX anime and episodes.
 </p>
 
+
+<!-- =========================
+     ADD ANIME
+     ========================= -->
+
+<h2>🎬 Add Anime</h2>
 
 <label>
 Anime Title
@@ -275,7 +287,6 @@ id="title"
 placeholder="Example: Shadow Warrior X"
 >
 
-
 <label>
 Description
 </label>
@@ -285,7 +296,6 @@ id="description"
 placeholder="Enter anime description">
 </textarea>
 
-
 <label>
 Genre
 </label>
@@ -294,7 +304,6 @@ Genre
 id="genre"
 placeholder="Action, Adventure, Fantasy"
 >
-
 
 <label>
 Rating
@@ -309,7 +318,6 @@ max="10"
 placeholder="8.5"
 >
 
-
 <label>
 Release Year
 </label>
@@ -319,7 +327,6 @@ id="year"
 type="number"
 placeholder="2026"
 >
-
 
 <label>
 Poster URL
@@ -331,7 +338,6 @@ type="url"
 placeholder="https://example.com/poster.jpg"
 >
 
-
 <label>
 Legal Content URL
 </label>
@@ -342,7 +348,6 @@ type="url"
 placeholder="https://example.com/video.mp4"
 >
 
-
 <button
 id="saveButton"
 onclick="saveAnime()">
@@ -350,6 +355,78 @@ onclick="saveAnime()">
 💾 Save Anime
 
 </button>
+
+<div
+id="message">
+</div>
+
+
+<div class="divider"></div>
+
+
+<!-- =========================
+     ADD EPISODE
+     ========================= -->
+
+<h2>📺 Add Episode</h2>
+
+<label>
+Select Anime
+</label>
+
+<select id="episodeAnime">
+
+<option value="">
+Select Anime
+</option>
+
+</select>
+
+
+<label>
+Episode Number
+</label>
+
+<input
+id="episodeNumber"
+type="number"
+min="1"
+placeholder="1"
+>
+
+
+<label>
+Episode Title
+</label>
+
+<input
+id="episodeTitle"
+placeholder="Episode 1"
+>
+
+
+<label>
+Legal Video URL
+</label>
+
+<input
+id="episodeVideo"
+type="url"
+placeholder="https://example.com/episode1.mp4"
+>
+
+
+<button
+id="saveEpisodeButton"
+onclick="saveEpisode()">
+
+💾 Save Episode
+
+</button>
+
+<div
+id="episodeMessage">
+</div>
 
 
 <button
@@ -359,11 +436,6 @@ onclick="logoutAdmin()">
 Logout
 
 </button>
-
-
-<div
-id="message">
-</div>
 
 </div>
 
@@ -383,6 +455,27 @@ id="animeListBox">
 id="animeList">
 
 Loading anime...
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     EPISODE LIST
+     ========================= -->
+
+<div
+class="box"
+id="episodeListBox">
+
+<h2>📺 Episode List</h2>
+
+<div
+id="episodeList">
+
+Loading episodes...
 
 </div>
 
@@ -417,7 +510,7 @@ SUPABASE_PUBLISHABLE_KEY
 
 
 /* =========================
-   CHECK LOGIN
+   CHECK SESSION
    ========================= */
 
 async function checkSession(){
@@ -430,7 +523,6 @@ session
 await supabaseClient
 .auth
 .getSession();
-
 
 if(session){
 
@@ -453,18 +545,15 @@ document.getElementById(
 "email"
 ).value.trim();
 
-
 const password =
 document.getElementById(
 "password"
 ).value;
 
-
 const loginMessage =
 document.getElementById(
 "loginMessage"
 );
-
 
 if(!email || !password){
 
@@ -475,21 +564,17 @@ return;
 
 }
 
-
 const button =
 document.getElementById(
 "loginButton"
 );
-
 
 button.disabled = true;
 
 loginMessage.textContent =
 "Logging in...";
 
-
 const {
-data,
 error
 } =
 await supabaseClient
@@ -502,7 +587,6 @@ password:password
 
 });
 
-
 if(error){
 
 loginMessage.textContent =
@@ -514,13 +598,10 @@ return;
 
 }
 
-
 loginMessage.textContent =
 "✅ Login successful!";
 
-
 showAdminPanel();
-
 
 button.disabled = false;
 
@@ -539,14 +620,14 @@ document.getElementById(
 ).style.display =
 "none";
 
-
 document.getElementById(
 "adminPanel"
 ).style.display =
 "block";
 
-
 loadAnime();
+loadAnimeSelect();
+loadEpisodes();
 
 }
 
@@ -562,18 +643,15 @@ await supabaseClient
 .auth
 .signOut();
 
-
 document.getElementById(
 "adminPanel"
 ).style.display =
 "none";
 
-
 document.getElementById(
 "loginBox"
 ).style.display =
 "block";
-
 
 document.getElementById(
 "loginMessage"
@@ -595,12 +673,10 @@ document.getElementById(
 "message"
 );
 
-
 const button =
 document.getElementById(
 "saveButton"
 );
-
 
 const {
 data:{
@@ -611,7 +687,6 @@ await supabaseClient
 .auth
 .getSession();
 
-
 if(!session){
 
 message.textContent =
@@ -621,49 +696,40 @@ return;
 
 }
 
-
 const title =
 document.getElementById(
 "title"
 ).value.trim();
-
 
 const description =
 document.getElementById(
 "description"
 ).value.trim();
 
-
 const genre =
 document.getElementById(
 "genre"
 ).value.trim();
-
 
 const rating =
 document.getElementById(
 "rating"
 ).value;
 
-
 const year =
 document.getElementById(
 "year"
 ).value;
-
 
 const poster =
 document.getElementById(
 "poster"
 ).value.trim();
 
-
 const content =
 document.getElementById(
 "content"
 ).value.trim();
-
-
 
 if(!title){
 
@@ -674,7 +740,6 @@ return;
 
 }
 
-
 if(!poster){
 
 message.textContent =
@@ -683,7 +748,6 @@ message.textContent =
 return;
 
 }
-
 
 if(!content){
 
@@ -694,12 +758,10 @@ return;
 
 }
 
-
 button.disabled = true;
 
 message.textContent =
 "Saving...";
-
 
 const {
 error
@@ -730,7 +792,6 @@ content_url:content
 
 });
 
-
 if(error){
 
 console.error(error);
@@ -745,59 +806,48 @@ return;
 
 }
 
-
 message.textContent =
-"✅ Anime saved to Supabase!";
-
+"✅ Anime saved!";
 
 document.getElementById(
 "title"
 ).value = "";
 
-
 document.getElementById(
 "description"
 ).value = "";
-
 
 document.getElementById(
 "genre"
 ).value = "";
 
-
 document.getElementById(
 "rating"
 ).value = "";
-
 
 document.getElementById(
 "year"
 ).value = "";
 
-
 document.getElementById(
 "poster"
 ).value = "";
-
 
 document.getElementById(
 "content"
 ).value = "";
 
-
 button.disabled = false;
 
-
-/* Refresh anime list */
-
 loadAnime();
+loadAnimeSelect();
 
 }
 
 
 
 /* =========================
-   LOAD ANIME LIST
+   LOAD ANIME
    ========================= */
 
 async function loadAnime(){
@@ -807,10 +857,8 @@ document.getElementById(
 "animeList"
 );
 
-
 list.innerHTML =
 "Loading anime...";
-
 
 const {
 data,
@@ -826,7 +874,6 @@ ascending:false
 }
 );
 
-
 if(error){
 
 console.error(error);
@@ -839,7 +886,6 @@ return;
 
 }
 
-
 if(!data || data.length === 0){
 
 list.innerHTML =
@@ -849,22 +895,17 @@ return;
 
 }
 
-
 list.innerHTML = "";
 
-
 data.forEach(anime => {
-
 
 const item =
 document.createElement(
 "div"
 );
 
-
 item.className =
 "anime-item";
-
 
 item.innerHTML = `
 
@@ -877,7 +918,7 @@ alt="${escapeHTML(anime.title || "Anime")}"
 ${escapeHTML(anime.title || "Untitled")}
 </h3>
 
-<div class="anime-info">
+<div class="info">
 
 Genre:
 ${escapeHTML(anime.genre || "N/A")}
@@ -904,6 +945,316 @@ onclick="deleteAnime('${anime.id}')">
 
 `;
 
+list.appendChild(item);
+
+});
+
+}
+
+
+
+/* =========================
+   LOAD ANIME SELECT
+   ========================= */
+
+async function loadAnimeSelect(){
+
+const select =
+document.getElementById(
+"episodeAnime"
+);
+
+select.innerHTML =
+'<option value="">Select Anime</option>';
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("anime")
+.select("id,title")
+.order(
+"title",
+{
+ascending:true
+}
+);
+
+if(error){
+
+console.error(error);
+
+return;
+
+}
+
+if(!data){
+
+return;
+
+}
+
+data.forEach(anime => {
+
+const option =
+document.createElement(
+"option"
+);
+
+option.value =
+anime.id;
+
+option.textContent =
+anime.title;
+
+select.appendChild(
+option
+);
+
+});
+
+}
+
+
+
+/* =========================
+   SAVE EPISODE
+   ========================= */
+
+async function saveEpisode(){
+
+const message =
+document.getElementById(
+"episodeMessage"
+);
+
+const button =
+document.getElementById(
+"saveEpisodeButton"
+);
+
+const animeId =
+document.getElementById(
+"episodeAnime"
+).value;
+
+const episodeNumber =
+document.getElementById(
+"episodeNumber"
+).value;
+
+const title =
+document.getElementById(
+"episodeTitle"
+).value.trim();
+
+const videoUrl =
+document.getElementById(
+"episodeVideo"
+).value.trim();
+
+if(!animeId){
+
+message.textContent =
+"❌ Please select an anime.";
+
+return;
+
+}
+
+if(!episodeNumber){
+
+message.textContent =
+"❌ Please enter episode number.";
+
+return;
+
+}
+
+if(!title){
+
+message.textContent =
+"❌ Please enter episode title.";
+
+return;
+
+}
+
+if(!videoUrl){
+
+message.textContent =
+"❌ Please enter legal video URL.";
+
+return;
+
+}
+
+button.disabled = true;
+
+message.textContent =
+"Saving episode...";
+
+const {
+error
+} =
+await supabaseClient
+.from("episodes")
+.insert({
+
+anime_id:animeId,
+
+episode_number:
+Number(episodeNumber),
+
+title:title,
+
+video_url:videoUrl
+
+});
+
+if(error){
+
+console.error(error);
+
+message.textContent =
+"❌ Error: " +
+error.message;
+
+button.disabled = false;
+
+return;
+
+}
+
+message.textContent =
+"✅ Episode saved!";
+
+document.getElementById(
+"episodeNumber"
+).value = "";
+
+document.getElementById(
+"episodeTitle"
+).value = "";
+
+document.getElementById(
+"episodeVideo"
+).value = "";
+
+document.getElementById(
+"episodeAnime"
+).value = "";
+
+button.disabled = false;
+
+loadEpisodes();
+
+}
+
+
+
+/* =========================
+   LOAD EPISODES
+   ========================= */
+
+async function loadEpisodes(){
+
+const list =
+document.getElementById(
+"episodeList"
+);
+
+list.innerHTML =
+"Loading episodes...";
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("episodes")
+.select(`
+id,
+anime_id,
+episode_number,
+title,
+video_url,
+anime (
+title
+)
+`)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+if(error){
+
+console.error(error);
+
+list.innerHTML =
+"❌ Episodes load नहीं हो पाए: " +
+error.message;
+
+return;
+
+}
+
+if(!data || data.length === 0){
+
+list.innerHTML =
+'<div class="empty">अभी कोई episode नहीं है।</div>';
+
+return;
+
+}
+
+list.innerHTML = "";
+
+data.forEach(episode => {
+
+const item =
+document.createElement(
+"div"
+);
+
+item.className =
+"episode-item";
+
+const animeTitle =
+episode.anime
+? episode.anime.title
+: "Unknown Anime";
+
+item.innerHTML = `
+
+<h3>
+📺 Episode ${episode.episode_number}
+</h3>
+
+<div class="info">
+
+Anime:
+${escapeHTML(animeTitle)}
+<br>
+
+Title:
+${escapeHTML(episode.title || "N/A")}
+
+</div>
+
+<button
+class="delete-btn"
+onclick="deleteEpisode('${episode.id}')">
+
+🗑️ Delete Episode
+
+</button>
+
+`;
 
 list.appendChild(item);
 
@@ -921,16 +1272,14 @@ async function deleteAnime(id){
 
 const confirmDelete =
 confirm(
-"क्या आप यह anime delete करना चाहते हैं?"
+"क्या आप यह anime delete करना चाहते हैं? उसके episodes भी delete हो सकते हैं।"
 );
-
 
 if(!confirmDelete){
 
 return;
 
 }
-
 
 const {
 error
@@ -939,7 +1288,6 @@ await supabaseClient
 .from("anime")
 .delete()
 .eq("id",id);
-
 
 if(error){
 
@@ -952,13 +1300,59 @@ return;
 
 }
 
-
 alert(
 "✅ Anime deleted!"
 );
 
-
 loadAnime();
+loadAnimeSelect();
+loadEpisodes();
+
+}
+
+
+
+/* =========================
+   DELETE EPISODE
+   ========================= */
+
+async function deleteEpisode(id){
+
+const confirmDelete =
+confirm(
+"क्या आप यह episode delete करना चाहते हैं?"
+);
+
+if(!confirmDelete){
+
+return;
+
+}
+
+const {
+error
+} =
+await supabaseClient
+.from("episodes")
+.delete()
+.eq("id",id);
+
+if(error){
+
+alert(
+"❌ Delete failed: " +
+error.message
+);
+
+return;
+
+}
+
+alert(
+"✅ Episode deleted!"
+);
+
+loadEpisodes();
 
 }
 
@@ -992,4 +1386,4 @@ checkSession();
 
 </body>
 
-   </html>
+</html>
