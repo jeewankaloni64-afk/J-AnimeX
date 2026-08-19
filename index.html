@@ -34,7 +34,7 @@ position:sticky;
 top:0;
 z-index:1000;
 padding:16px 6%;
-background:rgba(17,17,26,.96);
+background:rgba(17,17,26,.97);
 border-bottom:1px solid #252532;
 display:flex;
 justify-content:space-between;
@@ -87,8 +87,7 @@ cursor:pointer;
 
 .hero{
 padding:80px 6%;
-background:
-linear-gradient(
+background:linear-gradient(
 135deg,
 #17101f,
 #0d0d15
@@ -306,7 +305,6 @@ font-size:15px;
 J-<span>AnimeX</span>
 </div>
 
-
 <button
 class="menu"
 onclick="toggleMenu()"
@@ -315,7 +313,6 @@ aria-label="Menu">
 ☰
 
 </button>
-
 
 <nav
 class="nav"
@@ -329,11 +326,16 @@ id="nav">
 🎬 Anime
 </a>
 
+<a href="#latestEpisodes">
+📺 Episodes
+</a>
+
 <a href="#categories">
 🎭 Categories
 </a>
 
-<a href="watchlist.html"
+<a
+href="watchlist.html"
 class="watchlist">
 
 ❤️ Watchlist
@@ -364,25 +366,37 @@ Discover your next anime adventure.
 
 
 
+<!-- SEARCH -->
+
 <section id="anime">
 
 <div class="section-title">
 
 <h2>
-🔥 Anime
+🔎 Search Anime
 </h2>
 
 </div>
-
 
 <div class="search-box">
 
 <input
 class="search"
 id="search"
-placeholder="🔎 Search anime..."
+placeholder="Search anime..."
 oninput="searchAnime()"
 autocomplete="off">
+
+</div>
+
+
+<div
+class="section-title"
+style="margin-top:40px;">
+
+<h2>
+🔥 Anime
+</h2>
 
 </div>
 
@@ -400,6 +414,35 @@ Loading anime...
 </section>
 
 
+
+<!-- LATEST EPISODES -->
+
+<section id="latestEpisodes">
+
+<div class="section-title">
+
+<h2>
+📺 Latest Episodes
+</h2>
+
+</div>
+
+
+<div
+class="grid"
+id="episodeGrid">
+
+<div class="loading">
+Loading episodes...
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CATEGORIES -->
 
 <section id="categories">
 
@@ -496,8 +539,10 @@ All
 const SUPABASE_URL =
 "https://oytrcupsefiwtasoqaik.supabase.co";
 
+
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
+
 
 const supabaseClient =
 supabase.createClient(
@@ -816,6 +861,182 @@ encodeURIComponent(id);
 
 
 /* =========================
+   LOAD LATEST EPISODES
+   ========================= */
+
+async function loadLatestEpisodes(){
+
+const grid =
+document.getElementById(
+"episodeGrid"
+);
+
+
+grid.innerHTML =
+'<div class="loading">Loading episodes...</div>';
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("episodes")
+.select(`
+id,
+episode_number,
+title,
+anime_id,
+anime (
+id,
+title,
+poster_url
+)
+`)
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(12);
+
+
+if(error){
+
+console.error(error);
+
+grid.innerHTML =
+'<div class="error">❌ Episodes load नहीं हो पाए.</div>';
+
+return;
+
+}
+
+
+if(!data || data.length === 0){
+
+grid.innerHTML =
+'<div class="empty">अभी कोई episode नहीं है।</div>';
+
+return;
+
+}
+
+
+grid.innerHTML = "";
+
+
+data.forEach(episode => {
+
+const anime =
+episode.anime;
+
+
+if(!anime){
+
+return;
+
+}
+
+
+const card =
+document.createElement("div");
+
+card.className =
+"card";
+
+
+card.onclick =
+function(){
+
+openAnime(anime.id);
+
+};
+
+
+const poster =
+document.createElement("img");
+
+poster.className =
+"poster";
+
+poster.src =
+anime.poster_url || "";
+
+poster.alt =
+anime.title || "Anime";
+
+
+poster.onerror =
+function(){
+
+this.src =
+"data:image/svg+xml;charset=UTF-8," +
+encodeURIComponent(
+"<svg xmlns='http://www.w3.org/2000/svg' width='400' height='500'>" +
+"<rect width='100%' height='100%' fill='#292936'/>" +
+"<text x='50%' y='50%' fill='white' font-size='24' text-anchor='middle'>No Poster</text>" +
+"</svg>"
+);
+
+};
+
+
+const info =
+document.createElement("div");
+
+info.className =
+"info";
+
+
+const title =
+document.createElement("h3");
+
+title.textContent =
+anime.title || "Untitled";
+
+
+const ep =
+document.createElement("div");
+
+ep.className =
+"rating";
+
+ep.textContent =
+"📺 Episode " +
+(episode.episode_number ?? "");
+
+
+const episodeTitle =
+document.createElement("div");
+
+episodeTitle.className =
+"genre";
+
+episodeTitle.textContent =
+episode.title || "Episode";
+
+
+info.appendChild(title);
+
+info.appendChild(ep);
+
+info.appendChild(episodeTitle);
+
+card.appendChild(poster);
+
+card.appendChild(info);
+
+grid.appendChild(card);
+
+});
+
+}
+
+
+
+/* =========================
    CLOSE MOBILE MENU
    ========================= */
 
@@ -842,6 +1063,8 @@ document
    ========================= */
 
 loadAnime();
+
+loadLatestEpisodes();
 
 </script>
 
