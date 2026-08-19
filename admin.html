@@ -121,6 +121,54 @@ display:none;
 background:#444452;
 }
 
+/* =========================
+   ANIME LIST
+   ========================= */
+
+.anime-item{
+background:#242432;
+padding:15px;
+border-radius:10px;
+margin-top:12px;
+overflow:hidden;
+}
+
+.anime-item img{
+width:80px;
+height:110px;
+object-fit:cover;
+border-radius:8px;
+float:left;
+margin-right:15px;
+background:#111;
+}
+
+.anime-item h3{
+margin:0 0 8px;
+font-size:18px;
+}
+
+.anime-info{
+color:#bbb;
+font-size:14px;
+line-height:1.7;
+}
+
+.delete-btn{
+background:#d62839;
+margin-top:12px;
+}
+
+.clear{
+clear:both;
+}
+
+.empty{
+text-align:center;
+color:#aaa;
+padding:20px 0;
+}
+
 </style>
 
 </head>
@@ -147,7 +195,9 @@ href="index.html">
 <div class="container">
 
 
-<!-- LOGIN -->
+<!-- =========================
+     LOGIN
+     ========================= -->
 
 <div
 class="box"
@@ -201,7 +251,9 @@ id="loginMessage">
 
 
 
-<!-- ADMIN PANEL -->
+<!-- =========================
+     ADMIN PANEL
+     ========================= -->
 
 <div
 class="box"
@@ -316,7 +368,29 @@ id="message">
 </div>
 
 
+
+<!-- =========================
+     ANIME LIST
+     ========================= -->
+
+<div
+class="box"
+id="animeListBox">
+
+<h2>🎬 Anime List</h2>
+
+<div
+id="animeList">
+
+Loading anime...
+
 </div>
+
+</div>
+
+
+</div>
+
 
 
 <script>
@@ -326,9 +400,8 @@ id="message">
    SUPABASE
    ========================= */
 
-
 const SUPABASE_URL =
-"https://oytrcupsefiwtasoqaik.supabase.co";
+"https://oytrcupsefiwtasoqaik.supabase.co/rest/v1/";
 
 
 const SUPABASE_PUBLISHABLE_KEY =
@@ -346,7 +419,6 @@ SUPABASE_PUBLISHABLE_KEY
 /* =========================
    CHECK LOGIN
    ========================= */
-
 
 async function checkSession(){
 
@@ -373,7 +445,6 @@ showAdminPanel();
 /* =========================
    LOGIN
    ========================= */
-
 
 async function loginAdmin(){
 
@@ -461,7 +532,6 @@ button.disabled = false;
    SHOW ADMIN
    ========================= */
 
-
 function showAdminPanel(){
 
 document.getElementById(
@@ -475,6 +545,9 @@ document.getElementById(
 ).style.display =
 "block";
 
+
+loadAnime();
+
 }
 
 
@@ -482,7 +555,6 @@ document.getElementById(
 /* =========================
    LOGOUT
    ========================= */
-
 
 async function logoutAdmin(){
 
@@ -515,7 +587,6 @@ document.getElementById(
 /* =========================
    SAVE ANIME
    ========================= */
-
 
 async function saveAnime(){
 
@@ -716,6 +787,196 @@ document.getElementById(
 
 button.disabled = false;
 
+
+/* Refresh anime list */
+
+loadAnime();
+
+}
+
+
+
+/* =========================
+   LOAD ANIME LIST
+   ========================= */
+
+async function loadAnime(){
+
+const list =
+document.getElementById(
+"animeList"
+);
+
+
+list.innerHTML =
+"Loading anime...";
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("anime")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+console.error(error);
+
+list.innerHTML =
+"❌ Anime load नहीं हो पाया: " +
+error.message;
+
+return;
+
+}
+
+
+if(!data || data.length === 0){
+
+list.innerHTML =
+'<div class="empty">अभी कोई anime नहीं है।</div>';
+
+return;
+
+}
+
+
+list.innerHTML = "";
+
+
+data.forEach(anime => {
+
+
+const item =
+document.createElement(
+"div"
+);
+
+
+item.className =
+"anime-item";
+
+
+item.innerHTML = `
+
+<img
+src="${escapeHTML(anime.poster_url || "")}"
+alt="${escapeHTML(anime.title || "Anime")}"
+>
+
+<h3>
+${escapeHTML(anime.title || "Untitled")}
+</h3>
+
+<div class="anime-info">
+
+Genre:
+${escapeHTML(anime.genre || "N/A")}
+<br>
+
+Rating:
+${anime.rating ?? "N/A"}
+<br>
+
+Year:
+${anime.release_year ?? "N/A"}
+
+</div>
+
+<button
+class="delete-btn"
+onclick="deleteAnime('${anime.id}')">
+
+🗑️ Delete
+
+</button>
+
+<div class="clear"></div>
+
+`;
+
+
+list.appendChild(item);
+
+});
+
+}
+
+
+
+/* =========================
+   DELETE ANIME
+   ========================= */
+
+async function deleteAnime(id){
+
+const confirmDelete =
+confirm(
+"क्या आप यह anime delete करना चाहते हैं?"
+);
+
+
+if(!confirmDelete){
+
+return;
+
+}
+
+
+const {
+error
+} =
+await supabaseClient
+.from("anime")
+.delete()
+.eq("id",id);
+
+
+if(error){
+
+alert(
+"❌ Delete failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+alert(
+"✅ Anime deleted!"
+);
+
+
+loadAnime();
+
+}
+
+
+
+/* =========================
+   ESCAPE HTML
+   ========================= */
+
+function escapeHTML(value){
+
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
 }
 
 
@@ -724,7 +985,6 @@ button.disabled = false;
    START
    ========================= */
 
-
 checkSession();
 
 </script>
@@ -732,4 +992,4 @@ checkSession();
 
 </body>
 
-</html>
+   </html>
