@@ -5,7 +5,8 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>J-AnimeX</title>
 
@@ -17,6 +18,10 @@
 box-sizing:border-box;
 }
 
+html{
+scroll-behavior:smooth;
+}
+
 body{
 margin:0;
 background:#09090f;
@@ -25,18 +30,21 @@ font-family:Arial,sans-serif;
 }
 
 header{
-padding:18px 6%;
-background:#11111a;
+position:sticky;
+top:0;
+z-index:1000;
+padding:16px 6%;
+background:rgba(17,17,26,.96);
+border-bottom:1px solid #252532;
 display:flex;
 justify-content:space-between;
 align-items:center;
-flex-wrap:wrap;
-gap:12px;
 }
 
 .logo{
 font-size:28px;
 font-weight:bold;
+white-space:nowrap;
 }
 
 .logo span{
@@ -45,29 +53,50 @@ color:#ff3b81;
 
 .nav{
 display:flex;
+align-items:center;
 gap:8px;
-flex-wrap:wrap;
 }
 
 .nav a{
 color:#fff;
 text-decoration:none;
 background:#242432;
-padding:10px 15px;
+padding:10px 14px;
 border-radius:7px;
+transition:.2s;
+}
+
+.nav a:hover{
+background:#333344;
 }
 
 .nav .watchlist{
 background:#ff3b81;
 }
 
+.menu{
+display:none;
+border:0;
+background:#242432;
+color:#fff;
+font-size:22px;
+padding:8px 12px;
+border-radius:7px;
+cursor:pointer;
+}
+
 .hero{
-padding:70px 6%;
-background:#17101f;
+padding:80px 6%;
+background:
+linear-gradient(
+135deg,
+#17101f,
+#0d0d15
+);
 }
 
 .hero h1{
-font-size:50px;
+font-size:clamp(35px,6vw,55px);
 margin:0 0 15px;
 }
 
@@ -75,28 +104,52 @@ margin:0 0 15px;
 color:#ff3b81;
 }
 
+.hero p{
+color:#aaa;
+font-size:18px;
+margin:0;
+}
+
 section{
-padding:40px 6%;
+padding:45px 6%;
+}
+
+.section-title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.section-title h2{
+margin:0;
+}
+
+.search-box{
+margin-top:20px;
 }
 
 .search{
-width:90%;
-max-width:600px;
-padding:15px;
-border:0;
+width:100%;
+max-width:650px;
+padding:15px 18px;
+border:1px solid #292936;
 outline:0;
-border-radius:8px;
+border-radius:10px;
 background:#1b1b26;
 color:#fff;
 font-size:15px;
 }
 
+.search:focus{
+border-color:#ff3b81;
+}
+
 .grid{
 display:grid;
-grid-template-columns:repeat(
-auto-fit,
-minmax(170px,1fr)
-);
+grid-template-columns:
+repeat(auto-fill,minmax(170px,1fr));
 gap:20px;
 margin-top:25px;
 }
@@ -107,10 +160,12 @@ border-radius:12px;
 overflow:hidden;
 cursor:pointer;
 transition:.2s;
+border:1px solid transparent;
 }
 
 .card:hover{
 transform:translateY(-5px);
+border-color:#ff3b81;
 }
 
 .poster{
@@ -127,6 +182,7 @@ padding:15px;
 
 .info h3{
 margin:0 0 8px;
+font-size:17px;
 }
 
 .rating{
@@ -146,6 +202,11 @@ padding:10px 16px;
 border-radius:20px;
 margin:5px;
 cursor:pointer;
+transition:.2s;
+}
+
+.category:hover{
+background:#ff3b81;
 }
 
 .loading,
@@ -153,6 +214,7 @@ cursor:pointer;
 .error{
 color:#aaa;
 padding:25px 0;
+text-align:center;
 }
 
 .error{
@@ -164,6 +226,70 @@ text-align:center;
 padding:30px;
 background:#11111a;
 color:#888;
+margin-top:20px;
+}
+
+@media(max-width:700px){
+
+header{
+padding:14px 5%;
+}
+
+.logo{
+font-size:24px;
+}
+
+.menu{
+display:block;
+}
+
+.nav{
+display:none;
+position:absolute;
+top:65px;
+left:0;
+right:0;
+padding:15px 5%;
+background:#11111a;
+border-bottom:1px solid #252532;
+flex-direction:column;
+align-items:stretch;
+}
+
+.nav.active{
+display:flex;
+}
+
+.nav a{
+text-align:center;
+}
+
+.hero{
+padding:60px 5%;
+}
+
+section{
+padding:35px 5%;
+}
+
+.grid{
+grid-template-columns:
+repeat(2,minmax(0,1fr));
+gap:12px;
+}
+
+.poster{
+height:220px;
+}
+
+.info{
+padding:12px;
+}
+
+.info h3{
+font-size:15px;
+}
+
 }
 
 </style>
@@ -180,21 +306,45 @@ color:#888;
 J-<span>AnimeX</span>
 </div>
 
-<div class="nav">
 
-<a href="login.html">
-👤 Login
+<button
+class="menu"
+onclick="toggleMenu()"
+aria-label="Menu">
+
+☰
+
+</button>
+
+
+<nav
+class="nav"
+id="nav">
+
+<a href="index.html">
+🏠 Home
 </a>
 
-<a
-href="watchlist.html"
+<a href="#anime">
+🎬 Anime
+</a>
+
+<a href="#categories">
+🎭 Categories
+</a>
+
+<a href="watchlist.html"
 class="watchlist">
 
 ❤️ Watchlist
 
 </a>
 
-</div>
+<a href="login.html">
+👤 Login
+</a>
+
+</nav>
 
 </header>
 
@@ -214,24 +364,28 @@ Discover your next anime adventure.
 
 
 
-<section>
+<section id="anime">
 
-<h2>🔎 Search Anime</h2>
+<div class="section-title">
+
+<h2>
+🔥 Anime
+</h2>
+
+</div>
+
+
+<div class="search-box">
 
 <input
 class="search"
 id="search"
-placeholder="Search anime..."
+placeholder="🔎 Search anime..."
 oninput="searchAnime()"
->
+autocomplete="off">
 
-</section>
+</div>
 
-
-
-<section>
-
-<h2>🔥 Anime</h2>
 
 <div
 class="grid"
@@ -247,9 +401,16 @@ Loading anime...
 
 
 
-<section>
+<section id="categories">
 
-<h2>🎭 Categories</h2>
+<div class="section-title">
+
+<h2>
+🎭 Categories
+</h2>
+
+</div>
+
 
 <span
 class="category"
@@ -259,6 +420,7 @@ Action
 
 </span>
 
+
 <span
 class="category"
 onclick="filterGenre('Adventure')">
@@ -266,6 +428,7 @@ onclick="filterGenre('Adventure')">
 Adventure
 
 </span>
+
 
 <span
 class="category"
@@ -275,6 +438,7 @@ Fantasy
 
 </span>
 
+
 <span
 class="category"
 onclick="filterGenre('Romance')">
@@ -282,6 +446,7 @@ onclick="filterGenre('Romance')">
 Romance
 
 </span>
+
 
 <span
 class="category"
@@ -291,11 +456,21 @@ Comedy
 
 </span>
 
+
 <span
 class="category"
 onclick="filterGenre('Sci-Fi')">
 
 Sci-Fi
+
+</span>
+
+
+<span
+class="category"
+onclick="showAllAnime()">
+
+All
 
 </span>
 
@@ -319,12 +494,10 @@ Sci-Fi
    ========================= */
 
 const SUPABASE_URL =
-"https://oytrcupsefiwtasoqaik.supabase.co/rest/v1/";
-
+"https://oytrcupsefiwtasoqaik.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
-
 
 const supabaseClient =
 supabase.createClient(
@@ -333,8 +506,22 @@ SUPABASE_PUBLISHABLE_KEY
 );
 
 
-
 let allAnime = [];
+
+
+
+/* =========================
+   MOBILE MENU
+   ========================= */
+
+function toggleMenu(){
+
+const nav =
+document.getElementById("nav");
+
+nav.classList.toggle("active");
+
+}
 
 
 
@@ -345,9 +532,7 @@ let allAnime = [];
 async function loadAnime(){
 
 const grid =
-document.getElementById(
-"animeGrid"
-);
+document.getElementById("animeGrid");
 
 grid.innerHTML =
 '<div class="loading">Loading anime...</div>';
@@ -404,9 +589,8 @@ renderAnime(allAnime);
 function renderAnime(animeList){
 
 const grid =
-document.getElementById(
-"animeGrid"
-);
+document.getElementById("animeGrid");
+
 
 if(!animeList.length){
 
@@ -424,9 +608,7 @@ grid.innerHTML = "";
 animeList.forEach(anime => {
 
 const card =
-document.createElement(
-"div"
-);
+document.createElement("div");
 
 card.className =
 "card";
@@ -440,11 +622,8 @@ openAnime(anime.id);
 };
 
 
-
 const poster =
-document.createElement(
-"img"
-);
+document.createElement("img");
 
 poster.className =
 "poster";
@@ -456,28 +635,37 @@ poster.alt =
 anime.title || "Anime";
 
 
-const info =
-document.createElement(
-"div"
+poster.onerror =
+function(){
+
+this.src =
+"data:image/svg+xml;charset=UTF-8," +
+encodeURIComponent(
+"<svg xmlns='http://www.w3.org/2000/svg' width='400' height='500'>" +
+"<rect width='100%' height='100%' fill='#292936'/>" +
+"<text x='50%' y='50%' fill='white' font-size='24' text-anchor='middle'>No Poster</text>" +
+"</svg>"
 );
+
+};
+
+
+const info =
+document.createElement("div");
 
 info.className =
 "info";
 
 
 const title =
-document.createElement(
-"h3"
-);
+document.createElement("h3");
 
 title.textContent =
 anime.title || "Untitled";
 
 
 const rating =
-document.createElement(
-"div"
-);
+document.createElement("div");
 
 rating.className =
 "rating";
@@ -488,9 +676,7 @@ rating.textContent =
 
 
 const genre =
-document.createElement(
-"div"
-);
+document.createElement("div");
 
 genre.className =
 "genre";
@@ -499,29 +685,17 @@ genre.textContent =
 anime.genre || "Unknown";
 
 
-info.appendChild(
-title
-);
+info.appendChild(title);
 
-info.appendChild(
-rating
-);
+info.appendChild(rating);
 
-info.appendChild(
-genre
-);
+info.appendChild(genre);
 
-card.appendChild(
-poster
-);
+card.appendChild(poster);
 
-card.appendChild(
-info
-);
+card.appendChild(info);
 
-grid.appendChild(
-card
-);
+grid.appendChild(card);
 
 });
 
@@ -536,18 +710,15 @@ card
 function searchAnime(){
 
 const input =
-document.getElementById(
-"search"
-).value
+document.getElementById("search")
+.value
 .toLowerCase()
 .trim();
 
 
 if(!input){
 
-renderAnime(
-allAnime
-);
+renderAnime(allAnime);
 
 return;
 
@@ -574,9 +745,7 @@ genre.includes(input)
 });
 
 
-renderAnime(
-filtered
-);
+renderAnime(filtered);
 
 }
 
@@ -586,9 +755,7 @@ filtered
    FILTER GENRE
    ========================= */
 
-function filterGenre(
-genre
-){
+function filterGenre(genre){
 
 const filtered =
 allAnime.filter(
@@ -604,9 +771,31 @@ genre.toLowerCase()
 
 });
 
-renderAnime(
-filtered
-);
+renderAnime(filtered);
+
+document.getElementById(
+"anime"
+).scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+
+/* =========================
+   SHOW ALL
+   ========================= */
+
+function showAllAnime(){
+
+renderAnime(allAnime);
+
+document.getElementById(
+"anime"
+).scrollIntoView({
+behavior:"smooth"
+});
 
 }
 
@@ -616,15 +805,35 @@ filtered
    OPEN ANIME
    ========================= */
 
-function openAnime(
-id
-){
+function openAnime(id){
 
 window.location.href =
 "anime.html?id=" +
 encodeURIComponent(id);
 
 }
+
+
+
+/* =========================
+   CLOSE MOBILE MENU
+   ========================= */
+
+document.querySelectorAll(
+".nav a"
+).forEach(link => {
+
+link.addEventListener(
+"click",
+function(){
+
+document
+.getElementById("nav")
+.classList.remove("active");
+
+});
+
+});
 
 
 
