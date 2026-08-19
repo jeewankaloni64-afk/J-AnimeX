@@ -55,6 +55,7 @@ color:#ff3b81;
 display:flex;
 align-items:center;
 gap:8px;
+flex-wrap:wrap;
 }
 
 .nav a{
@@ -305,6 +306,7 @@ font-size:15px;
 J-<span>AnimeX</span>
 </div>
 
+
 <button
 class="menu"
 onclick="toggleMenu()"
@@ -313,6 +315,7 @@ aria-label="Menu">
 ☰
 
 </button>
+
 
 <nav
 class="nav"
@@ -342,8 +345,12 @@ class="watchlist">
 
 </a>
 
-<a href="login.html" id="accountLink">
+<a
+href="login.html"
+id="accountLink">
+
 👤 Login
+
 </a>
 
 </nav>
@@ -366,7 +373,7 @@ Discover your next anime adventure.
 
 
 
-<!-- SEARCH -->
+<!-- SEARCH + ANIME -->
 
 <section id="anime">
 
@@ -377,6 +384,7 @@ Discover your next anime adventure.
 </h2>
 
 </div>
+
 
 <div class="search-box">
 
@@ -571,13 +579,64 @@ nav.classList.toggle("active");
 
 
 /* =========================
+   ACCOUNT LINK
+   ========================= */
+
+async function updateAccountLink(){
+
+const link =
+document.getElementById(
+"accountLink"
+);
+
+if(!link){
+return;
+}
+
+
+const {
+data:{
+user
+}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if(user){
+
+link.href =
+"profile.html";
+
+link.textContent =
+"👤 Profile";
+
+}else{
+
+link.href =
+"login.html";
+
+link.textContent =
+"👤 Login";
+
+}
+
+}
+
+
+
+/* =========================
    LOAD ANIME
    ========================= */
 
 async function loadAnime(){
 
 const grid =
-document.getElementById("animeGrid");
+document.getElementById(
+"animeGrid"
+);
+
 
 grid.innerHTML =
 '<div class="loading">Loading anime...</div>';
@@ -621,7 +680,9 @@ return;
 allAnime =
 data || [];
 
-renderAnime(allAnime);
+renderAnime(
+allAnime
+);
 
 }
 
@@ -631,10 +692,14 @@ renderAnime(allAnime);
    RENDER ANIME
    ========================= */
 
-function renderAnime(animeList){
+function renderAnime(
+animeList
+){
 
 const grid =
-document.getElementById("animeGrid");
+document.getElementById(
+"animeGrid"
+);
 
 
 if(!animeList.length){
@@ -650,10 +715,13 @@ return;
 grid.innerHTML = "";
 
 
-animeList.forEach(anime => {
+animeList.forEach(
+anime => {
 
 const card =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 card.className =
 "card";
@@ -662,13 +730,17 @@ card.className =
 card.onclick =
 function(){
 
-openAnime(anime.id);
+openAnime(
+anime.id
+);
 
 };
 
 
 const poster =
-document.createElement("img");
+document.createElement(
+"img"
+);
 
 poster.className =
 "poster";
@@ -677,7 +749,8 @@ poster.src =
 anime.poster_url || "";
 
 poster.alt =
-anime.title || "Anime";
+anime.title ||
+"Anime";
 
 
 poster.onerror =
@@ -696,21 +769,28 @@ encodeURIComponent(
 
 
 const info =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 info.className =
 "info";
 
 
 const title =
-document.createElement("h3");
+document.createElement(
+"h3"
+);
 
 title.textContent =
-anime.title || "Untitled";
+anime.title ||
+"Untitled";
 
 
 const rating =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 rating.className =
 "rating";
@@ -721,26 +801,41 @@ rating.textContent =
 
 
 const genre =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 genre.className =
 "genre";
 
 genre.textContent =
-anime.genre || "Unknown";
+anime.genre ||
+"Unknown";
 
 
-info.appendChild(title);
+info.appendChild(
+title
+);
 
-info.appendChild(rating);
+info.appendChild(
+rating
+);
 
-info.appendChild(genre);
+info.appendChild(
+genre
+);
 
-card.appendChild(poster);
+card.appendChild(
+poster
+);
 
-card.appendChild(info);
+card.appendChild(
+info
+);
 
-grid.appendChild(card);
+grid.appendChild(
+card
+);
 
 });
 
@@ -755,7 +850,9 @@ grid.appendChild(card);
 function searchAnime(){
 
 const input =
-document.getElementById("search")
+document.getElementById(
+"search"
+)
 .value
 .toLowerCase()
 .trim();
@@ -763,7 +860,9 @@ document.getElementById("search")
 
 if(!input){
 
-renderAnime(allAnime);
+renderAnime(
+allAnime
+);
 
 return;
 
@@ -790,7 +889,9 @@ genre.includes(input)
 });
 
 
-renderAnime(filtered);
+renderAnime(
+filtered
+);
 
 }
 
@@ -800,7 +901,9 @@ renderAnime(filtered);
    FILTER GENRE
    ========================= */
 
-function filterGenre(genre){
+function filterGenre(
+genre
+){
 
 const filtered =
 allAnime.filter(
@@ -816,11 +919,16 @@ genre.toLowerCase()
 
 });
 
-renderAnime(filtered);
+
+renderAnime(
+filtered
+);
+
 
 document.getElementById(
 "anime"
-).scrollIntoView({
+)
+.scrollIntoView({
 behavior:"smooth"
 });
 
@@ -834,11 +942,14 @@ behavior:"smooth"
 
 function showAllAnime(){
 
-renderAnime(allAnime);
+renderAnime(
+allAnime
+);
 
 document.getElementById(
 "anime"
-).scrollIntoView({
+)
+.scrollIntoView({
 behavior:"smooth"
 });
 
@@ -850,7 +961,9 @@ behavior:"smooth"
    OPEN ANIME
    ========================= */
 
-function openAnime(id){
+function openAnime(
+id
+){
 
 window.location.href =
 "anime.html?id=" +
@@ -927,21 +1040,22 @@ return;
 grid.innerHTML = "";
 
 
-data.forEach(episode => {
+data.forEach(
+episode => {
 
 const anime =
 episode.anime;
 
 
 if(!anime){
-
 return;
-
 }
 
 
 const card =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 card.className =
 "card";
@@ -950,13 +1064,17 @@ card.className =
 card.onclick =
 function(){
 
-openAnime(anime.id);
+openAnime(
+anime.id
+);
 
 };
 
 
 const poster =
-document.createElement("img");
+document.createElement(
+"img"
+);
 
 poster.className =
 "poster";
@@ -965,7 +1083,8 @@ poster.src =
 anime.poster_url || "";
 
 poster.alt =
-anime.title || "Anime";
+anime.title ||
+"Anime";
 
 
 poster.onerror =
@@ -984,21 +1103,28 @@ encodeURIComponent(
 
 
 const info =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 info.className =
 "info";
 
 
 const title =
-document.createElement("h3");
+document.createElement(
+"h3"
+);
 
 title.textContent =
-anime.title || "Untitled";
+anime.title ||
+"Untitled";
 
 
 const ep =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 ep.className =
 "rating";
@@ -1009,26 +1135,41 @@ ep.textContent =
 
 
 const episodeTitle =
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 episodeTitle.className =
 "genre";
 
 episodeTitle.textContent =
-episode.title || "Episode";
+episode.title ||
+"Episode";
 
 
-info.appendChild(title);
+info.appendChild(
+title
+);
 
-info.appendChild(ep);
+info.appendChild(
+ep
+);
 
-info.appendChild(episodeTitle);
+info.appendChild(
+episodeTitle
+);
 
-card.appendChild(poster);
+card.appendChild(
+poster
+);
 
-card.appendChild(info);
+card.appendChild(
+info
+);
 
-grid.appendChild(card);
+grid.appendChild(
+card
+);
 
 });
 
@@ -1042,15 +1183,21 @@ grid.appendChild(card);
 
 document.querySelectorAll(
 ".nav a"
-).forEach(link => {
+)
+.forEach(
+link => {
 
 link.addEventListener(
 "click",
 function(){
 
 document
-.getElementById("nav")
-.classList.remove("active");
+.getElementById(
+"nav"
+)
+.classList.remove(
+"active"
+);
 
 });
 
@@ -1061,6 +1208,8 @@ document
 /* =========================
    START
    ========================= */
+
+updateAccountLink();
 
 loadAnime();
 
