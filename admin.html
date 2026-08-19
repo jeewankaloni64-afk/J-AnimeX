@@ -428,6 +428,49 @@ onclick="saveEpisode()">
 id="episodeMessage">
 </div>
 
+<hr style="margin:30px 0;border-color:#333;">
+
+<h2>📺 Add Episode</h2>
+
+<label>Anime</label>
+
+<select id="episodeAnime">
+    <option value="">Select Anime</option>
+</select>
+
+<label>Episode Number</label>
+
+<input
+    id="episodeNumber"
+    type="number"
+    min="1"
+    placeholder="1"
+>
+
+<label>Episode Title</label>
+
+<input
+    id="episodeTitle"
+    placeholder="Episode 1"
+>
+
+<label>Video URL</label>
+
+<input
+    id="episodeVideo"
+    type="url"
+    placeholder="https://example.com/video.mp4"
+>
+
+<button
+    id="episodeButton"
+    onclick="saveEpisode()">
+
+💾 Save Episode
+
+</button>
+
+<div id="episodeMessage"></div>
 
 <button
 class="logout"
@@ -602,7 +645,7 @@ loginMessage.textContent =
 "✅ Login successful!";
 
 showAdminPanel();
-
+loadAnimeForEpisodes();
 button.disabled = false;
 
 }
@@ -1377,10 +1420,188 @@ return String(value)
 
 /* =========================
    START
-   ========================= */
+ ========================= */
+
+async function loadAnimeForEpisodes(){
+
+const select =
+document.getElementById("episodeAnime");
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("anime")
+.select("id,title")
+.order("title");
+
+if(error){
+
+console.error(error);
+
+select.innerHTML =
+'<option value="">Failed to load anime</option>';
+
+return;
+
+}
+
+select.innerHTML =
+'<option value="">Select Anime</option>';
+
+data.forEach(anime => {
+
+const option =
+document.createElement("option");
+
+option.value =
+anime.id;
+
+option.textContent =
+anime.title;
+
+select.appendChild(option);
+
+});
+
+}
+
+
+async function saveEpisode(){
+
+const animeId =
+document.getElementById(
+"episodeAnime"
+).value;
+
+const episodeNumber =
+document.getElementById(
+"episodeNumber"
+).value;
+
+const episodeTitle =
+document.getElementById(
+"episodeTitle"
+).value.trim();
+
+const videoUrl =
+document.getElementById(
+"episodeVideo"
+).value.trim();
+
+const message =
+document.getElementById(
+"episodeMessage"
+);
+
+const button =
+document.getElementById(
+"episodeButton"
+);
+
+
+if(!animeId){
+
+message.textContent =
+"❌ Anime select करें।";
+
+return;
+
+}
+
+
+if(!episodeNumber){
+
+message.textContent =
+"❌ Episode number डालें।";
+
+return;
+
+}
+
+
+if(!videoUrl){
+
+message.textContent =
+"❌ Video URL डालें।";
+
+return;
+
+}
+
+
+button.disabled = true;
+
+message.textContent =
+"Saving...";
+
+
+const {
+error
+} =
+await supabaseClient
+.from("episodes")
+.insert({
+
+anime_id:
+animeId,
+
+episode_number:
+Number(episodeNumber),
+
+title:
+episodeTitle ||
+`Episode ${episodeNumber}`,
+
+video_url:
+videoUrl
+
+});
+
+
+if(error){
+
+console.error(error);
+
+message.textContent =
+"❌ " +
+error.message;
+
+button.disabled = false;
+
+return;
+
+}
+
+
+message.textContent =
+"✅ Episode saved!";
+
+document.getElementById(
+"episodeNumber"
+).value = "";
+
+document.getElementById(
+"episodeTitle"
+).value = "";
+
+document.getElementById(
+"episodeVideo"
+).value = "";
+
+button.disabled = false;
+
+}
 
 checkSession();
+if(session){
 
+showAdminPanel();
+
+loadAnimeForEpisodes();
+
+}
 </script>
 
 
