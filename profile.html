@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Profile | J-AnimeX</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+min-height:100vh;
+background:#09090f;
+color:#fff;
+font-family:Arial,sans-serif;
+}
+
+header{
+padding:16px 6%;
+background:#11111a;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ff3b81;
+}
+
+.home{
+color:#fff;
+text-decoration:none;
+background:#242432;
+padding:10px 15px;
+border-radius:8px;
+}
+
+.container{
+width:92%;
+max-width:600px;
+margin:50px auto;
+}
+
+.profile-card{
+background:#15151f;
+border-radius:16px;
+padding:30px;
+text-align:center;
+}
+
+.avatar{
+width:90px;
+height:90px;
+margin:0 auto 20px;
+border-radius:50%;
+background:#ff3b81;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+}
+
+.email{
+color:#aaa;
+margin-bottom:10px;
+word-break:break-all;
+}
+
+.role{
+display:inline-block;
+background:#242432;
+padding:8px 15px;
+border-radius:20px;
+margin-top:10px;
+}
+
+.info{
+margin-top:30px;
+text-align:left;
+background:#1b1b26;
+padding:20px;
+border-radius:10px;
+}
+
+.info p{
+margin:10px 0;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:0;
+border-radius:8px;
+background:#ff3b81;
+color:#fff;
+font-weight:bold;
+font-size:15px;
+cursor:pointer;
+}
+
+.loading,
+.error{
+text-align:center;
+padding:30px;
+color:#aaa;
+}
+
+.error{
+color:#ff6b81;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="logo">
+J-<span>AnimeX</span>
+</div>
+
+<a
+href="index.html"
+class="home">
+
+← Home
+
+</a>
+
+</header>
+
+
+
+<div class="container">
+
+<div
+class="profile-card"
+id="profileCard">
+
+<div class="loading">
+Loading profile...
+</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   SUPABASE
+   ========================= */
+
+const SUPABASE_URL =
+"https://oytrcupsefiwtasoqaik.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+
+
+/* =========================
+   LOAD PROFILE
+   ========================= */
+
+async function loadProfile(){
+
+const card =
+document.getElementById(
+"profileCard"
+);
+
+
+const {
+data:{
+user
+}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if(!user){
+
+card.innerHTML = `
+
+<div class="error">
+
+❌ Please login first.
+
+<br><br>
+
+<a
+href="login.html"
+style="color:#ff3b81">
+
+Go to Login
+
+</a>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+const {
+data:profile,
+error
+} =
+await supabaseClient
+.from("Profiles")
+.select("id,role,created_at")
+.eq("id",user.id)
+.maybeSingle();
+
+
+if(error){
+
+console.error(error);
+
+card.innerHTML = `
+
+<div class="error">
+
+❌ Profile load failed.
+
+<br>
+
+${error.message}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+const role =
+profile?.role || "user";
+
+
+const createdAt =
+profile?.created_at
+? new Date(
+profile.created_at
+).toLocaleDateString()
+: "N/A";
+
+
+const initial =
+(
+user.email || "U"
+)
+.charAt(0)
+.toUpperCase();
+
+
+card.innerHTML = `
+
+<div class="avatar">
+
+${initial}
+
+</div>
+
+<h1>
+
+My Profile
+
+</h1>
+
+<div class="email">
+
+${escapeHTML(
+user.email || ""
+)}
+
+</div>
+
+<div class="role">
+
+${escapeHTML(role)}
+
+</div>
+
+<div class="info">
+
+<p>
+<strong>User ID:</strong><br>
+${escapeHTML(user.id)}
+</p>
+
+<p>
+<strong>Account Created:</strong>
+${escapeHTML(createdAt)}
+</p>
+
+</div>
+
+<button
+onclick="logoutUser()">
+
+🚪 Logout
+
+</button>
+
+`;
+
+}
+
+
+
+/* =========================
+   LOGOUT
+   ========================= */
+
+async function logoutUser(){
+
+const {
+error
+} =
+await supabaseClient
+.auth
+.signOut();
+
+
+if(error){
+
+alert(
+"Logout failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+window.location.href =
+"index.html";
+
+}
+
+
+
+/* =========================
+   ESCAPE HTML
+   ========================= */
+
+function escapeHTML(value){
+
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+
+/* =========================
+   START
+   ========================= */
+
+loadProfile();
+
+</script>
+
+
+</body>
+
+</html>
