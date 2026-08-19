@@ -10,6 +10,8 @@ content="width=device-width, initial-scale=1.0">
 
 <title>Anime Details | J-AnimeX</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 *{
@@ -55,13 +57,13 @@ padding:45px 6%;
 }
 
 .poster{
-height:380px;
+width:100%;
+max-width:350px;
+height:480px;
+object-fit:cover;
 background:#242432;
 border-radius:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:100px;
+display:block;
 margin-bottom:30px;
 }
 
@@ -89,6 +91,9 @@ font-size:16px;
 
 .buttons{
 margin-top:25px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
 }
 
 .btn{
@@ -99,9 +104,13 @@ color:white;
 text-decoration:none;
 border:0;
 border-radius:8px;
-margin-right:8px;
 cursor:pointer;
 font-weight:bold;
+}
+
+.btn:disabled{
+opacity:.6;
+cursor:not-allowed;
 }
 
 .secondary{
@@ -125,10 +134,22 @@ margin-top:20px;
 color:#aaa;
 }
 
+.error{
+color:#ff6b81;
+}
+
+.loading{
+color:#aaa;
+}
+
 @media(max-width:600px){
 
+.container{
+padding:30px 5%;
+}
+
 .poster{
-height:280px;
+height:380px;
 }
 
 h1{
@@ -154,26 +175,43 @@ J-<span>AnimeX</span>
 <a
 class="home"
 href="index.html">
+
 ← Home
+
 </a>
 
 </header>
 
 
+
 <main class="container">
 
 
-<div
+<img
 class="poster"
-id="poster">
+id="poster"
+src=""
+alt="Anime Poster"
+style="display:none;"
+>
 
-🎬
+
+<div
+class="loading"
+id="loading">
+
+Loading anime...
 
 </div>
 
 
+<div
+id="content"
+style="display:none;"
+>
+
+
 <h1 id="title">
-Loading...
 </h1>
 
 
@@ -197,18 +235,24 @@ id="description">
 
 <div class="buttons">
 
+
 <button
 class="btn"
+id="watchlistButton"
 onclick="addWatchlist()">
+
 ❤️ Add to Watchlist
+
 </button>
 
 
 <a
-class="btn"
+class="btn secondary"
 id="watchButton"
 href="#">
+
 ▶ Watch
+
 </a>
 
 
@@ -236,11 +280,39 @@ id="message">
 </div>
 
 
+</div>
+
+
 </main>
+
 
 
 <script>
 
+
+/* =========================
+   SUPABASE
+   ========================= */
+
+const SUPABASE_URL =
+"https://oytrcupsefiwtasoqaik.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+
+
+/* =========================
+   GET ANIME ID
+   ========================= */
 
 const params =
 new URLSearchParams(
@@ -248,186 +320,426 @@ window.location.search
 );
 
 
-const anime =
-params.get("anime");
+const animeId =
+params.get("id");
 
 
-const data = {
 
+/* =========================
+   ELEMENTS
+   ========================= */
 
-"Naruto":{
+const loading =
+document.getElementById(
+"loading"
+);
 
-rating:"⭐ 8.8 / 10",
+const content =
+document.getElementById(
+"content"
+);
 
-genre:
-"Action • Adventure",
+const poster =
+document.getElementById(
+"poster"
+);
 
-description:
-"Naruto is an anime adventure about ninjas, friendship, determination and an unforgettable journey.",
-
-year:"2002",
-
-status:"Completed",
-
-episodes:"220"
-
-},
-
-
-"One Piece":{
-
-rating:"⭐ 9.0 / 10",
-
-genre:
-"Adventure • Fantasy",
-
-description:
-"One Piece follows a pirate crew on an adventure across the seas in search of a legendary treasure.",
-
-year:"1999",
-
-status:"Ongoing",
-
-episodes:"1000+"
-
-},
-
-
-"Demon Slayer":{
-
-rating:"⭐ 8.6 / 10",
-
-genre:
-"Action • Fantasy",
-
-description:
-"Demon Slayer follows a young swordsman on a dangerous journey involving demons, family and courage.",
-
-year:"2019",
-
-status:"Ongoing",
-
-episodes:"Multiple seasons"
-
-},
-
-
-"Jujutsu Kaisen":{
-
-rating:"⭐ 8.5 / 10",
-
-genre:
-"Action • Supernatural",
-
-description:
-"Jujutsu Kaisen is a supernatural action series involving cursed energy and powerful battles.",
-
-year:"2020",
-
-status:"Ongoing",
-
-episodes:"Multiple seasons"
-
-}
-
-};
-
-
-const info =
-data[anime] || {
-
-rating:"⭐ New",
-
-genre:"Anime",
-
-description:
-"Information coming soon.",
-
-year:"2026",
-
-status:"Coming Soon",
-
-episodes:"Coming Soon"
-
-};
-
-
+const title =
 document.getElementById(
 "title"
-).textContent =
-anime || "Anime";
+);
 
-
+const rating =
 document.getElementById(
 "rating"
-).textContent =
-info.rating;
+);
 
-
+const genre =
 document.getElementById(
 "genre"
-).textContent =
-info.genre;
+);
 
-
+const description =
 document.getElementById(
 "description"
-).textContent =
-info.description;
+);
 
-
+const year =
 document.getElementById(
 "year"
-).textContent =
-"📅 Year: " + info.year;
+);
 
-
+const status =
 document.getElementById(
 "status"
-).textContent =
-"📌 Status: " + info.status;
+);
 
-
+const episodes =
 document.getElementById(
 "episodes"
-).textContent =
-"🎬 Episodes: " + info.episodes;
+);
 
-
-
-/*
-Connect the Watch button
-to the watch page.
-*/
-
+const watchButton =
 document.getElementById(
 "watchButton"
-).href =
-"watch.html?anime=" +
-encodeURIComponent(anime);
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+const watchlistButton =
+document.getElementById(
+"watchlistButton"
+);
 
 
 
-function addWatchlist(){
+/* =========================
+   LOAD ANIME
+   ========================= */
 
-if(!anime){
+async function loadAnime(){
+
+if(!animeId){
+
+loading.innerHTML =
+'<div class="error">❌ Anime ID नहीं मिला.</div>';
 
 return;
 
 }
 
-localStorage.setItem(
-"JAnimeX_Watchlist",
-anime
-);
 
-document.getElementById(
-"message"
-).textContent =
-"❤️ " + anime +
-" added to your watchlist!";
+const {
+data,
+error
+} =
+await supabaseClient
+.from("anime")
+.select(`
+id,
+title,
+description,
+genre,
+rating,
+release_year,
+poster_url,
+status,
+episodes
+`)
+.eq(
+"id",
+animeId
+)
+.maybeSingle();
+
+
+if(error){
+
+console.error(error);
+
+loading.innerHTML =
+'<div class="error">❌ Anime load नहीं हो पाया.</div>';
+
+return;
 
 }
+
+
+if(!data){
+
+loading.innerHTML =
+'<div class="error">❌ Anime नहीं मिला.</div>';
+
+return;
+
+}
+
+
+title.textContent =
+data.title || "Untitled";
+
+
+rating.textContent =
+"⭐ " +
+(data.rating ?? "N/A");
+
+
+genre.textContent =
+data.genre || "Unknown";
+
+
+description.textContent =
+data.description ||
+"Information coming soon.";
+
+
+year.textContent =
+"📅 Year: " +
+(data.release_year || "N/A");
+
+
+status.textContent =
+"📌 Status: " +
+(data.status || "N/A");
+
+
+episodes.textContent =
+"🎬 Episodes: " +
+(data.episodes || "N/A");
+
+
+if(data.poster_url){
+
+poster.src =
+data.poster_url;
+
+poster.alt =
+data.title || "Anime";
+
+poster.style.display =
+"block";
+
+}
+
+
+watchButton.href =
+"watch.html?id=" +
+encodeURIComponent(data.id);
+
+
+loading.style.display =
+"none";
+
+content.style.display =
+"block";
+
+
+await checkWatchlist();
+
+}
+
+
+
+/* =========================
+   CHECK LOGIN
+   ========================= */
+
+async function getCurrentUser(){
+
+const {
+data,
+error
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if(error){
+
+console.error(error);
+
+return null;
+
+}
+
+
+return data.user || null;
+
+}
+
+
+
+/* =========================
+   ADD TO WATCHLIST
+   ========================= */
+
+async function addWatchlist(){
+
+if(!animeId){
+
+return;
+
+}
+
+
+const user =
+await getCurrentUser();
+
+
+if(!user){
+
+message.textContent =
+"❌ Please login first to use Watchlist.";
+
+setTimeout(() => {
+
+window.location.href =
+"login.html";
+
+},1000);
+
+return;
+
+}
+
+
+watchlistButton.disabled =
+true;
+
+message.textContent =
+"Adding to watchlist...";
+
+
+const {
+data:existing,
+error:checkError
+} =
+await supabaseClient
+.from("watchlist")
+.select("id")
+.eq("user_id",user.id)
+.eq("anime_id",animeId)
+.maybeSingle();
+
+
+if(checkError){
+
+console.error(checkError);
+
+message.textContent =
+"❌ " + checkError.message;
+
+watchlistButton.disabled =
+false;
+
+return;
+
+}
+
+
+if(existing){
+
+message.textContent =
+"❤️ Already in your watchlist.";
+
+watchlistButton.disabled =
+false;
+
+return;
+
+}
+
+
+const {
+error
+} =
+await supabaseClient
+.from("watchlist")
+.insert({
+
+user_id:user.id,
+
+anime_id:animeId
+
+});
+
+
+if(error){
+
+console.error(error);
+
+message.textContent =
+"❌ " + error.message;
+
+watchlistButton.disabled =
+false;
+
+return;
+
+}
+
+
+message.textContent =
+"❤️ Added to your watchlist!";
+
+watchlistButton.textContent =
+"❤️ In Watchlist";
+
+watchlistButton.disabled =
+true;
+
+}
+
+
+
+/* =========================
+   CHECK WATCHLIST
+   ========================= */
+
+async function checkWatchlist(){
+
+if(!animeId){
+
+return;
+
+}
+
+
+const user =
+await getCurrentUser();
+
+
+if(!user){
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("watchlist")
+.select("id")
+.eq("user_id",user.id)
+.eq("anime_id",animeId)
+.maybeSingle();
+
+
+if(error){
+
+console.error(error);
+
+return;
+
+}
+
+
+if(data){
+
+watchlistButton.textContent =
+"❤️ In Watchlist";
+
+watchlistButton.disabled =
+true;
+
+}
+
+}
+
+
+
+/* =========================
+   START
+   ========================= */
+
+loadAnime();
 
 </script>
 
