@@ -8,7 +8,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>J-AnimeX Admin</title>
+<title>Admin | J-AnimeX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -51,19 +51,20 @@ border-radius:8px;
 }
 
 .container{
-max-width:700px;
-margin:auto;
-padding:35px 6%;
+width:92%;
+max-width:1000px;
+margin:40px auto;
 }
 
-.box{
+.card{
 background:#15151f;
 padding:25px;
-border-radius:15px;
-margin-bottom:20px;
+border-radius:14px;
+margin-bottom:25px;
 }
 
-h1,h2{
+h1,
+h2{
 margin-top:0;
 }
 
@@ -87,96 +88,48 @@ font-size:15px;
 }
 
 textarea{
-min-height:110px;
+min-height:120px;
 resize:vertical;
 }
 
 button{
 width:100%;
 padding:14px;
-margin-top:18px;
+margin-top:20px;
 border:0;
 border-radius:8px;
 background:#ff3b81;
 color:#fff;
 font-weight:bold;
+font-size:15px;
 cursor:pointer;
 }
 
 button:disabled{
 opacity:.6;
+cursor:not-allowed;
 }
 
-#loginMessage,
-#message,
-#episodeMessage{
+.message{
 margin-top:15px;
-text-align:center;
-line-height:1.5;
+color:#aaa;
 }
 
-#adminPanel{
-display:none;
+.error{
+color:#ff6b81;
 }
 
-.logout{
-background:#444452;
+.success{
+color:#70e000;
 }
 
-/* =========================
-   ANIME LIST
-   ========================= */
-
-.anime-item,
-.episode-item{
-background:#242432;
-padding:15px;
-border-radius:10px;
-margin-top:12px;
-overflow:hidden;
-}
-
-.anime-item img{
-width:80px;
-height:110px;
-object-fit:cover;
-border-radius:8px;
-float:left;
-margin-right:15px;
-background:#111;
-}
-
-.anime-item h3,
-.episode-item h3{
-margin:0 0 8px;
-font-size:18px;
-}
-
-.info{
-color:#bbb;
-font-size:14px;
-line-height:1.7;
-}
-
-.delete-btn{
-background:#d62839;
-margin-top:12px;
-}
-
-.clear{
-clear:both;
-}
-
-.empty{
-text-align:center;
+.loading{
 color:#aaa;
 padding:20px 0;
 }
 
-.divider{
-height:1px;
-background:#2b2b38;
-margin:25px 0;
+.hidden{
+display:none;
 }
 
 </style>
@@ -194,190 +147,167 @@ J-<span>AnimeX</span>
 </div>
 
 <a
-class="home"
-href="index.html">
+href="index.html"
+class="home">
+
 ← Home
+
 </a>
 
 </header>
 
 
+
 <div class="container">
 
 
-<!-- =========================
-     LOGIN
-     ========================= -->
-
 <div
-class="box"
-id="loginBox">
+class="card"
+id="loadingCard">
 
-<h2>🔐 Admin Login</h2>
-
-<p>
-Login with your Supabase account.
-</p>
-
-<label>
-Email
-</label>
-
-<input
-id="email"
-type="email"
-placeholder="Admin Email"
-autocomplete="email"
->
-
-<label>
-Password
-</label>
-
-<input
-id="password"
-type="password"
-placeholder="Password"
-autocomplete="current-password"
->
-
-<button
-id="loginButton"
-onclick="loginAdmin()">
-
-🔐 Login
-
-</button>
-
-<div
-id="loginMessage">
+<div class="loading">
+Checking admin access...
 </div>
 
 </div>
 
 
 
+<div
+id="adminPanel"
+class="hidden">
+
+
 <!-- =========================
-     ADMIN PANEL
+     ADMIN TITLE
      ========================= -->
 
-<div
-class="box"
-id="adminPanel">
+<div class="card">
 
-<h1>🛠️ Admin Panel</h1>
+<h1>
+⚙️ J-AnimeX Admin Panel
+</h1>
 
 <p>
-Manage J-AnimeX anime and episodes.
+Anime और Episodes manage करें।
 </p>
+
+</div>
+
 
 
 <!-- =========================
      ADD ANIME
      ========================= -->
 
-<h2>🎬 Add Anime</h2>
+<div class="card">
+
+<h2>
+🎬 Add Anime
+</h2>
+
 
 <label>
 Anime Title
 </label>
 
 <input
-id="title"
-placeholder="Example: Shadow Warrior X"
->
+id="animeTitle"
+type="text"
+placeholder="Naruto">
+
 
 <label>
 Description
 </label>
 
 <textarea
-id="description"
-placeholder="Enter anime description">
+id="animeDescription"
+placeholder="Anime description...">
 </textarea>
+
 
 <label>
 Genre
 </label>
 
 <input
-id="genre"
-placeholder="Action, Adventure, Fantasy"
->
+id="animeGenre"
+type="text"
+placeholder="Action, Adventure">
+
 
 <label>
 Rating
 </label>
 
 <input
-id="rating"
+id="animeRating"
 type="number"
 step="0.1"
 min="0"
 max="10"
-placeholder="8.5"
->
+placeholder="8.5">
+
 
 <label>
 Release Year
 </label>
 
 <input
-id="year"
+id="animeYear"
 type="number"
-placeholder="2026"
->
+placeholder="2026">
+
 
 <label>
 Poster URL
 </label>
 
 <input
-id="poster"
+id="animePoster"
 type="url"
-placeholder="https://example.com/poster.jpg"
->
+placeholder="https://example.com/poster.jpg">
 
-<label>
-Legal Content URL
-</label>
-
-<input
-id="content"
-type="url"
-placeholder="https://example.com/video.mp4"
->
 
 <button
-id="saveButton"
-onclick="saveAnime()">
+id="addAnimeButton"
+onclick="addAnime()">
 
-💾 Save Anime
+➕ Add Anime
 
 </button>
 
+
 <div
-id="message">
+class="message"
+id="animeMessage">
 </div>
 
+</div>
 
-<div class="divider"></div>
 
 
 <!-- =========================
      ADD EPISODE
      ========================= -->
 
-<h2>📺 Add Episode</h2>
+<div class="card">
+
+<h2>
+📺 Add Episode
+</h2>
+
 
 <label>
 Select Anime
 </label>
 
-<select id="episodeAnime">
+<select
+id="episodeAnime">
 
 <option value="">
-Select Anime
+Loading anime...
 </option>
 
 </select>
@@ -391,8 +321,7 @@ Episode Number
 id="episodeNumber"
 type="number"
 min="1"
-placeholder="1"
->
+placeholder="1">
 
 
 <label>
@@ -401,126 +330,37 @@ Episode Title
 
 <input
 id="episodeTitle"
-placeholder="Episode 1"
->
+type="text"
+placeholder="Episode 1">
 
 
 <label>
-Legal Video URL
+Video URL
 </label>
 
 <input
 id="episodeVideo"
 type="url"
-placeholder="https://example.com/episode1.mp4"
->
+placeholder="https://example.com/video.mp4">
 
 
 <button
-id="saveEpisodeButton"
-onclick="saveEpisode()">
+id="addEpisodeButton"
+onclick="addEpisode()">
 
-💾 Save Episode
+➕ Add Episode
 
 </button>
 
+
 <div
+class="message"
 id="episodeMessage">
 </div>
 
-<hr style="margin:30px 0;border-color:#333;">
-
-<h2>📺 Add Episode</h2>
-
-<label>Anime</label>
-
-<select id="episodeAnime">
-    <option value="">Select Anime</option>
-</select>
-
-<label>Episode Number</label>
-
-<input
-    id="episodeNumber"
-    type="number"
-    min="1"
-    placeholder="1"
->
-
-<label>Episode Title</label>
-
-<input
-    id="episodeTitle"
-    placeholder="Episode 1"
->
-
-<label>Video URL</label>
-
-<input
-    id="episodeVideo"
-    type="url"
-    placeholder="https://example.com/video.mp4"
->
-
-<button
-    id="episodeButton"
-    onclick="saveEpisode()">
-
-💾 Save Episode
-
-</button>
-
-<div id="episodeMessage"></div>
-
-<button
-class="logout"
-onclick="logoutAdmin()">
-
-Logout
-
-</button>
-
 </div>
 
 
-
-<!-- =========================
-     ANIME LIST
-     ========================= -->
-
-<div
-class="box"
-id="animeListBox">
-
-<h2>🎬 Anime List</h2>
-
-<div
-id="animeList">
-
-Loading anime...
-
-</div>
-
-</div>
-
-
-
-<!-- =========================
-     EPISODE LIST
-     ========================= -->
-
-<div
-class="box"
-id="episodeListBox">
-
-<h2>📺 Episode List</h2>
-
-<div
-id="episodeList">
-
-Loading episodes...
-
-</div>
 
 </div>
 
@@ -537,7 +377,7 @@ Loading episodes...
    ========================= */
 
 const SUPABASE_URL =
-"https://oytrcupsefiwtasoqaik.supabase.co/rest/v1/";
+"https://oytrcupsefiwtasoqaik.supabase.co";
 
 
 const SUPABASE_PUBLISHABLE_KEY =
@@ -553,462 +393,142 @@ SUPABASE_PUBLISHABLE_KEY
 
 
 /* =========================
-   CHECK SESSION
+   CHECK ADMIN
    ========================= */
 
-async function checkSession(){
+async function checkAdmin(){
+
+const loadingCard =
+document.getElementById(
+"loadingCard"
+);
+
+const panel =
+document.getElementById(
+"adminPanel"
+);
+
 
 const {
 data:{
-session
+user
 }
 } =
 await supabaseClient
 .auth
-.getSession();
+.getUser();
 
-if(session){
 
-showAdminPanel();
+if(!user){
 
-}
+loadingCard.innerHTML = `
 
-}
+<div class="error">
 
+❌ Please login first.
 
+<br><br>
 
-/* =========================
-   LOGIN
-   ========================= */
+<a
+href="login.html"
+style="color:#ff3b81">
 
-async function loginAdmin(){
+Go to Login
 
-const email =
-document.getElementById(
-"email"
-).value.trim();
-
-const password =
-document.getElementById(
-"password"
-).value;
-
-const loginMessage =
-document.getElementById(
-"loginMessage"
-);
-
-if(!email || !password){
-
-loginMessage.textContent =
-"❌ Email और Password भरें।";
-
-return;
-
-}
-
-const button =
-document.getElementById(
-"loginButton"
-);
-
-button.disabled = true;
-
-loginMessage.textContent =
-"Logging in...";
-
-const {
-error
-} =
-await supabaseClient
-.auth
-.signInWithPassword({
-
-email:email,
-
-password:password
-
-});
-
-if(error){
-
-loginMessage.textContent =
-"❌ " + error.message;
-
-button.disabled = false;
-
-return;
-
-}
-
-loginMessage.textContent =
-"✅ Login successful!";
-
-showAdminPanel();
-loadAnimeForEpisodes();
-button.disabled = false;
-
-}
-
-
-
-/* =========================
-   SHOW ADMIN
-   ========================= */
-
-function showAdminPanel(){
-
-document.getElementById(
-"loginBox"
-).style.display =
-"none";
-
-document.getElementById(
-"adminPanel"
-).style.display =
-"block";
-
-loadAnime();
-loadAnimeSelect();
-loadEpisodes();
-
-}
-
-
-
-/* =========================
-   LOGOUT
-   ========================= */
-
-async function logoutAdmin(){
-
-await supabaseClient
-.auth
-.signOut();
-
-document.getElementById(
-"adminPanel"
-).style.display =
-"none";
-
-document.getElementById(
-"loginBox"
-).style.display =
-"block";
-
-document.getElementById(
-"loginMessage"
-).textContent =
-"Logged out.";
-
-}
-
-
-
-/* =========================
-   SAVE ANIME
-   ========================= */
-
-async function saveAnime(){
-
-const message =
-document.getElementById(
-"message"
-);
-
-const button =
-document.getElementById(
-"saveButton"
-);
-
-const {
-data:{
-session
-}
-} =
-await supabaseClient
-.auth
-.getSession();
-
-if(!session){
-
-message.textContent =
-"❌ Please login first.";
-
-return;
-
-}
-
-const title =
-document.getElementById(
-"title"
-).value.trim();
-
-const description =
-document.getElementById(
-"description"
-).value.trim();
-
-const genre =
-document.getElementById(
-"genre"
-).value.trim();
-
-const rating =
-document.getElementById(
-"rating"
-).value;
-
-const year =
-document.getElementById(
-"year"
-).value;
-
-const poster =
-document.getElementById(
-"poster"
-).value.trim();
-
-const content =
-document.getElementById(
-"content"
-).value.trim();
-
-if(!title){
-
-message.textContent =
-"❌ Please enter anime title.";
-
-return;
-
-}
-
-if(!poster){
-
-message.textContent =
-"❌ Please enter poster URL.";
-
-return;
-
-}
-
-if(!content){
-
-message.textContent =
-"❌ Please enter legal content URL.";
-
-return;
-
-}
-
-button.disabled = true;
-
-message.textContent =
-"Saving...";
-
-const {
-error
-} =
-await supabaseClient
-.from("anime")
-.insert({
-
-title:title,
-
-description:description,
-
-genre:genre,
-
-rating:
-rating
-? Number(rating)
-: null,
-
-release_year:
-year
-? Number(year)
-: null,
-
-poster_url:poster,
-
-content_url:content
-
-});
-
-if(error){
-
-console.error(error);
-
-message.textContent =
-"❌ Error: " +
-error.message;
-
-button.disabled = false;
-
-return;
-
-}
-
-message.textContent =
-"✅ Anime saved!";
-
-document.getElementById(
-"title"
-).value = "";
-
-document.getElementById(
-"description"
-).value = "";
-
-document.getElementById(
-"genre"
-).value = "";
-
-document.getElementById(
-"rating"
-).value = "";
-
-document.getElementById(
-"year"
-).value = "";
-
-document.getElementById(
-"poster"
-).value = "";
-
-document.getElementById(
-"content"
-).value = "";
-
-button.disabled = false;
-
-loadAnime();
-loadAnimeSelect();
-
-}
-
-
-
-/* =========================
-   LOAD ANIME
-   ========================= */
-
-async function loadAnime(){
-
-const list =
-document.getElementById(
-"animeList"
-);
-
-list.innerHTML =
-"Loading anime...";
-
-const {
-data,
-error
-} =
-await supabaseClient
-.from("anime")
-.select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
-if(error){
-
-console.error(error);
-
-list.innerHTML =
-"❌ Anime load नहीं हो पाया: " +
-error.message;
-
-return;
-
-}
-
-if(!data || data.length === 0){
-
-list.innerHTML =
-'<div class="empty">अभी कोई anime नहीं है।</div>';
-
-return;
-
-}
-
-list.innerHTML = "";
-
-data.forEach(anime => {
-
-const item =
-document.createElement(
-"div"
-);
-
-item.className =
-"anime-item";
-
-item.innerHTML = `
-
-<img
-src="${escapeHTML(anime.poster_url || "")}"
-alt="${escapeHTML(anime.title || "Anime")}"
->
-
-<h3>
-${escapeHTML(anime.title || "Untitled")}
-</h3>
-
-<div class="info">
-
-Genre:
-${escapeHTML(anime.genre || "N/A")}
-<br>
-
-Rating:
-${anime.rating ?? "N/A"}
-<br>
-
-Year:
-${anime.release_year ?? "N/A"}
+</a>
 
 </div>
 
-<button
-class="delete-btn"
-onclick="deleteAnime('${anime.id}')">
+`;
 
-🗑️ Delete
+return;
 
-</button>
+}
 
-<div class="clear"></div>
+
+const {
+data:profile,
+error
+} =
+await supabaseClient
+.from("Profiles")
+.select("role")
+.eq("id",user.id)
+.maybeSingle();
+
+
+if(error){
+
+console.error(error);
+
+loadingCard.innerHTML = `
+
+<div class="error">
+
+❌ Profile check failed.
+
+<br>
+
+${escapeHTML(
+error.message
+)}
+
+</div>
 
 `;
 
-list.appendChild(item);
+return;
 
-});
+}
+
+
+if(!profile || profile.role !== "admin"){
+
+loadingCard.innerHTML = `
+
+<div class="error">
+
+❌ Access denied.
+
+<br><br>
+
+Admin access required.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+loadingCard.classList.add(
+"hidden"
+);
+
+panel.classList.remove(
+"hidden"
+);
+
+
+loadAnimeOptions();
 
 }
 
 
 
 /* =========================
-   LOAD ANIME SELECT
+   LOAD ANIME OPTIONS
    ========================= */
 
-async function loadAnimeSelect(){
+async function loadAnimeOptions(){
 
 const select =
 document.getElementById(
 "episodeAnime"
 );
 
-select.innerHTML =
-'<option value="">Select Anime</option>';
 
 const {
 data,
@@ -1024,19 +544,32 @@ ascending:true
 }
 );
 
+
 if(error){
 
 console.error(error);
 
-return;
-
-}
-
-if(!data){
+select.innerHTML =
+'<option value="">Failed to load anime</option>';
 
 return;
 
 }
+
+
+if(!data || data.length === 0){
+
+select.innerHTML =
+'<option value="">No anime available</option>';
+
+return;
+
+}
+
+
+select.innerHTML =
+'<option value="">Select anime</option>';
+
 
 data.forEach(anime => {
 
@@ -1062,20 +595,172 @@ option
 
 
 /* =========================
-   SAVE EPISODE
+   ADD ANIME
    ========================= */
 
-async function saveEpisode(){
+async function addAnime(){
+
+const title =
+document.getElementById(
+"animeTitle"
+).value.trim();
+
+const description =
+document.getElementById(
+"animeDescription"
+).value.trim();
+
+const genre =
+document.getElementById(
+"animeGenre"
+).value.trim();
+
+const ratingValue =
+document.getElementById(
+"animeRating"
+).value;
+
+const yearValue =
+document.getElementById(
+"animeYear"
+).value;
+
+const poster =
+document.getElementById(
+"animePoster"
+).value.trim();
+
 
 const message =
 document.getElementById(
-"episodeMessage"
+"animeMessage"
 );
 
 const button =
 document.getElementById(
-"saveEpisodeButton"
+"addAnimeButton"
 );
+
+
+if(!title){
+
+message.className =
+"message error";
+
+message.textContent =
+"Anime title required.";
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+message.className =
+"message";
+
+message.textContent =
+"Adding anime...";
+
+
+const {
+error
+} =
+await supabaseClient
+.from("anime")
+.insert({
+
+title:title,
+
+description:
+description || null,
+
+genre:
+genre || null,
+
+rating:
+ratingValue
+? Number(ratingValue)
+: null,
+
+release_year:
+yearValue
+? Number(yearValue)
+: null,
+
+poster_url:
+poster || null
+
+});
+
+
+if(error){
+
+console.error(error);
+
+message.className =
+"message error";
+
+message.textContent =
+"❌ " + error.message;
+
+button.disabled =
+false;
+
+return;
+
+}
+
+
+message.className =
+"message success";
+
+message.textContent =
+"✅ Anime added successfully!";
+
+
+document.getElementById(
+"animeTitle"
+).value = "";
+
+document.getElementById(
+"animeDescription"
+).value = "";
+
+document.getElementById(
+"animeGenre"
+).value = "";
+
+document.getElementById(
+"animeRating"
+).value = "";
+
+document.getElementById(
+"animeYear"
+).value = "";
+
+document.getElementById(
+"animePoster"
+).value = "";
+
+
+button.disabled =
+false;
+
+
+loadAnimeOptions();
+
+}
+
+
+
+/* =========================
+   ADD EPISODE
+   ========================= */
+
+async function addEpisode(){
 
 const animeId =
 document.getElementById(
@@ -1097,46 +782,66 @@ document.getElementById(
 "episodeVideo"
 ).value.trim();
 
+
+const message =
+document.getElementById(
+"episodeMessage"
+);
+
+const button =
+document.getElementById(
+"addEpisodeButton"
+);
+
+
 if(!animeId){
 
+message.className =
+"message error";
+
 message.textContent =
-"❌ Please select an anime.";
+"Please select anime.";
 
 return;
 
 }
+
 
 if(!episodeNumber){
 
+message.className =
+"message error";
+
 message.textContent =
-"❌ Please enter episode number.";
+"Episode number required.";
 
 return;
 
 }
 
-if(!title){
-
-message.textContent =
-"❌ Please enter episode title.";
-
-return;
-
-}
 
 if(!videoUrl){
 
+message.className =
+"message error";
+
 message.textContent =
-"❌ Please enter legal video URL.";
+"Video URL required.";
 
 return;
 
 }
 
-button.disabled = true;
+
+button.disabled =
+true;
+
+message.className =
+"message";
 
 message.textContent =
-"Saving episode...";
+"Adding episode...";
+
 
 const {
 error
@@ -1145,33 +850,45 @@ await supabaseClient
 .from("episodes")
 .insert({
 
-anime_id:animeId,
+anime_id:
+animeId,
 
 episode_number:
 Number(episodeNumber),
 
-title:title,
+title:
+title || null,
 
-video_url:videoUrl
+video_url:
+videoUrl
 
 });
+
 
 if(error){
 
 console.error(error);
 
-message.textContent =
-"❌ Error: " +
-error.message;
+message.className =
+"message error";
 
-button.disabled = false;
+message.textContent =
+"❌ " + error.message;
+
+button.disabled =
+false;
 
 return;
 
 }
 
+
+message.className =
+"message success";
+
 message.textContent =
-"✅ Episode saved!";
+"✅ Episode added successfully!";
+
 
 document.getElementById(
 "episodeNumber"
@@ -1185,217 +902,9 @@ document.getElementById(
 "episodeVideo"
 ).value = "";
 
-document.getElementById(
-"episodeAnime"
-).value = "";
 
-button.disabled = false;
-
-loadEpisodes();
-
-}
-
-
-
-/* =========================
-   LOAD EPISODES
-   ========================= */
-
-async function loadEpisodes(){
-
-const list =
-document.getElementById(
-"episodeList"
-);
-
-list.innerHTML =
-"Loading episodes...";
-
-const {
-data,
-error
-} =
-await supabaseClient
-.from("episodes")
-.select(`
-id,
-anime_id,
-episode_number,
-title,
-video_url,
-anime (
-title
-)
-`)
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
-if(error){
-
-console.error(error);
-
-list.innerHTML =
-"❌ Episodes load नहीं हो पाए: " +
-error.message;
-
-return;
-
-}
-
-if(!data || data.length === 0){
-
-list.innerHTML =
-'<div class="empty">अभी कोई episode नहीं है।</div>';
-
-return;
-
-}
-
-list.innerHTML = "";
-
-data.forEach(episode => {
-
-const item =
-document.createElement(
-"div"
-);
-
-item.className =
-"episode-item";
-
-const animeTitle =
-episode.anime
-? episode.anime.title
-: "Unknown Anime";
-
-item.innerHTML = `
-
-<h3>
-📺 Episode ${episode.episode_number}
-</h3>
-
-<div class="info">
-
-Anime:
-${escapeHTML(animeTitle)}
-<br>
-
-Title:
-${escapeHTML(episode.title || "N/A")}
-
-</div>
-
-<button
-class="delete-btn"
-onclick="deleteEpisode('${episode.id}')">
-
-🗑️ Delete Episode
-
-</button>
-
-`;
-
-list.appendChild(item);
-
-});
-
-}
-
-
-
-/* =========================
-   DELETE ANIME
-   ========================= */
-
-async function deleteAnime(id){
-
-const confirmDelete =
-confirm(
-"क्या आप यह anime delete करना चाहते हैं? उसके episodes भी delete हो सकते हैं।"
-);
-
-if(!confirmDelete){
-
-return;
-
-}
-
-const {
-error
-} =
-await supabaseClient
-.from("anime")
-.delete()
-.eq("id",id);
-
-if(error){
-
-alert(
-"❌ Delete failed: " +
-error.message
-);
-
-return;
-
-}
-
-alert(
-"✅ Anime deleted!"
-);
-
-loadAnime();
-loadAnimeSelect();
-loadEpisodes();
-
-}
-
-
-
-/* =========================
-   DELETE EPISODE
-   ========================= */
-
-async function deleteEpisode(id){
-
-const confirmDelete =
-confirm(
-"क्या आप यह episode delete करना चाहते हैं?"
-);
-
-if(!confirmDelete){
-
-return;
-
-}
-
-const {
-error
-} =
-await supabaseClient
-.from("episodes")
-.delete()
-.eq("id",id);
-
-if(error){
-
-alert(
-"❌ Delete failed: " +
-error.message
-);
-
-return;
-
-}
-
-alert(
-"✅ Episode deleted!"
-);
-
-loadEpisodes();
+button.disabled =
+false;
 
 }
 
@@ -1420,188 +929,10 @@ return String(value)
 
 /* =========================
    START
- ========================= */
+   ========================= */
 
-async function loadAnimeForEpisodes(){
+checkAdmin();
 
-const select =
-document.getElementById("episodeAnime");
-
-const {
-data,
-error
-} =
-await supabaseClient
-.from("anime")
-.select("id,title")
-.order("title");
-
-if(error){
-
-console.error(error);
-
-select.innerHTML =
-'<option value="">Failed to load anime</option>';
-
-return;
-
-}
-
-select.innerHTML =
-'<option value="">Select Anime</option>';
-
-data.forEach(anime => {
-
-const option =
-document.createElement("option");
-
-option.value =
-anime.id;
-
-option.textContent =
-anime.title;
-
-select.appendChild(option);
-
-});
-
-}
-
-
-async function saveEpisode(){
-
-const animeId =
-document.getElementById(
-"episodeAnime"
-).value;
-
-const episodeNumber =
-document.getElementById(
-"episodeNumber"
-).value;
-
-const episodeTitle =
-document.getElementById(
-"episodeTitle"
-).value.trim();
-
-const videoUrl =
-document.getElementById(
-"episodeVideo"
-).value.trim();
-
-const message =
-document.getElementById(
-"episodeMessage"
-);
-
-const button =
-document.getElementById(
-"episodeButton"
-);
-
-
-if(!animeId){
-
-message.textContent =
-"❌ Anime select करें।";
-
-return;
-
-}
-
-
-if(!episodeNumber){
-
-message.textContent =
-"❌ Episode number डालें।";
-
-return;
-
-}
-
-
-if(!videoUrl){
-
-message.textContent =
-"❌ Video URL डालें।";
-
-return;
-
-}
-
-
-button.disabled = true;
-
-message.textContent =
-"Saving...";
-
-
-const {
-error
-} =
-await supabaseClient
-.from("episodes")
-.insert({
-
-anime_id:
-animeId,
-
-episode_number:
-Number(episodeNumber),
-
-title:
-episodeTitle ||
-`Episode ${episodeNumber}`,
-
-video_url:
-videoUrl
-
-});
-
-
-if(error){
-
-console.error(error);
-
-message.textContent =
-"❌ " +
-error.message;
-
-button.disabled = false;
-
-return;
-
-}
-
-
-message.textContent =
-"✅ Episode saved!";
-
-document.getElementById(
-"episodeNumber"
-).value = "";
-
-document.getElementById(
-"episodeTitle"
-).value = "";
-
-document.getElementById(
-"episodeVideo"
-).value = "";
-
-button.disabled = false;
-
-}
-
-checkSession();
-if(session){
-
-showAdminPanel();
-
-loadAnimeForEpisodes();
-
-}
 </script>
 
 
