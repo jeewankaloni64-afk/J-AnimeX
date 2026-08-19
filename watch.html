@@ -10,6 +10,8 @@ content="width=device-width, initial-scale=1.0">
 
 <title>Watch | J-AnimeX</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 *{
@@ -64,11 +66,18 @@ video{
 width:100%;
 display:block;
 max-height:600px;
+background:#000;
 }
 
 h1{
 margin-top:25px;
 font-size:35px;
+}
+
+.episode-title{
+color:#ff3b81;
+font-size:18px;
+margin:10px 0;
 }
 
 .description{
@@ -94,6 +103,20 @@ font-weight:bold;
 background:#242432;
 }
 
+.message{
+margin-top:20px;
+color:#aaa;
+}
+
+.error{
+color:#ff6b81;
+}
+
+.loading{
+color:#aaa;
+padding:30px 0;
+}
+
 .note{
 margin-top:25px;
 padding:18px;
@@ -101,6 +124,37 @@ background:#15151f;
 border-radius:10px;
 color:#aaa;
 line-height:1.6;
+}
+
+.episodes{
+margin-top:35px;
+}
+
+.episodes h2{
+margin-bottom:15px;
+}
+
+.episode-list{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.episode-btn{
+background:#242432;
+color:white;
+border:0;
+padding:10px 15px;
+border-radius:7px;
+cursor:pointer;
+}
+
+.episode-btn.active{
+background:#ff3b81;
+}
+
+.hidden{
+display:none;
 }
 
 </style>
@@ -120,29 +174,39 @@ J-<span>AnimeX</span>
 <a
 class="back"
 href="index.html">
+
 ← Home
+
 </a>
 
 </header>
 
 
+
 <main class="container">
+
+
+<div
+class="loading"
+id="loading">
+
+Loading episode...
+
+</div>
+
+
+
+<div
+id="content"
+class="hidden">
 
 
 <div class="video-box">
 
-<!--
-Add your own, licensed, or legally
-permitted video URL in the src below.
--->
-
 <video
+id="video"
 controls
-poster="">
-
-<source
-src=""
-type="video/mp4">
+playsinline>
 
 Your browser does not support
 video playback.
@@ -152,9 +216,15 @@ video playback.
 </div>
 
 
-<h1 id="title">
-Loading...
+<h1
+id="title">
 </h1>
+
+
+<div
+class="episode-title"
+id="episodeTitle">
+</div>
 
 
 <p
@@ -165,16 +235,46 @@ id="description">
 
 <a
 class="btn secondary"
-href="index.html">
-← Back to Home
+id="animeButton"
+href="#">
+
+← Anime Details
+
 </a>
 
 
 <button
 class="btn"
+id="watchlistButton"
 onclick="addWatchlist()">
+
 ❤️ Add to Watchlist
+
 </button>
+
+
+<div
+class="message"
+id="message">
+</div>
+
+
+
+<div class="episodes">
+
+<h2>
+📺 Episodes
+</h2>
+
+
+<div
+class="episode-list"
+id="episodeList">
+
+</div>
+
+</div>
+
 
 
 <div class="note">
@@ -188,11 +288,39 @@ permitted video content.
 </div>
 
 
+</div>
+
+
 </main>
+
 
 
 <script>
 
+
+/* =========================
+   SUPABASE
+   ========================= */
+
+const SUPABASE_URL =
+"https://oytrcupsefiwtasoqaik.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+
+
+/* =========================
+   URL PARAMETERS
+   ========================= */
 
 const params =
 new URLSearchParams(
@@ -200,75 +328,574 @@ window.location.search
 );
 
 
-const anime =
-params.get("anime");
+const animeId =
+params.get("id");
 
 
-const data = {
-
-"Naruto":{
-description:
-"Anime information and legally permitted video content."
-},
-
-"One Piece":{
-description:
-"Anime information and legally permitted video content."
-},
-
-"Demon Slayer":{
-description:
-"Anime information and legally permitted video content."
-},
-
-"Jujutsu Kaisen":{
-description:
-"Anime information and legally permitted video content."
-}
-
-};
+const episodeId =
+params.get("episode");
 
 
-const info =
-data[anime] || {
 
-description:
-"Information coming soon."
+/* =========================
+   ELEMENTS
+   ========================= */
 
-};
+const loading =
+document.getElementById(
+"loading"
+);
 
+const content =
+document.getElementById(
+"content"
+);
 
+const video =
+document.getElementById(
+"video"
+);
+
+const title =
 document.getElementById(
 "title"
-).textContent =
-anime || "Anime";
+);
 
+const episodeTitle =
+document.getElementById(
+"episodeTitle"
+);
 
+const description =
 document.getElementById(
 "description"
-).textContent =
-info.description;
+);
+
+const animeButton =
+document.getElementById(
+"animeButton"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+const episodeList =
+document.getElementById(
+"episodeList"
+);
+
+const watchlistButton =
+document.getElementById(
+"watchlistButton"
+);
 
 
-function addWatchlist(){
 
-if(!anime){
+let currentAnimeId =
+null;
+
+
+
+/* =========================
+   LOAD WATCH PAGE
+   ========================= */
+
+async function loadWatchPage(){
+
+if(!animeId){
+
+loading.innerHTML =
+'<div class="error">❌ Anime ID नहीं मिला.</div>';
 
 return;
 
 }
 
-localStorage.setItem(
-"JAnimeX_Watchlist",
+
+const {
+data:anime,
+error
+} =
+await supabaseClient
+.from("anime")
+.select(`
+id,
+title,
+description,
+poster_url
+`)
+.eq(
+"id",
+animeId
+)
+.maybeSingle();
+
+
+if(error){
+
+console.error(error);
+
+loading.innerHTML =
+'<div class="error">❌ Anime load नहीं हो पाया.</div>';
+
+return;
+
+}
+
+
+if(!anime){
+
+loading.innerHTML =
+'<div class="error">❌ Anime नहीं मिला.</div>';
+
+return;
+
+}
+
+
+currentAnimeId =
+anime.id;
+
+
+title.textContent =
+anime.title || "Anime";
+
+
+description.textContent =
+anime.description ||
+"Information coming soon.";
+
+
+animeButton.href =
+"anime.html?id=" +
+encodeURIComponent(
+anime.id
+);
+
+
+if(anime.poster_url){
+
+video.poster =
+anime.poster_url;
+
+}
+
+
+await loadEpisodes(
 anime
 );
 
-alert(
-anime +
-" added to your watchlist ❤️"
+}
+
+
+
+/* =========================
+   LOAD EPISODES
+   ========================= */
+
+async function loadEpisodes(
+anime
+){
+
+const {
+data:episodes,
+error
+} =
+await supabaseClient
+.from("episodes")
+.select(`
+id,
+episode_number,
+title,
+video_url,
+created_at
+`)
+.eq(
+"anime_id",
+anime.id
+)
+.order(
+"episode_number",
+{
+ascending:true
+}
+);
+
+
+if(error){
+
+console.error(error);
+
+loading.innerHTML =
+'<div class="error">❌ Episodes load नहीं हो पाए.</div>';
+
+return;
+
+}
+
+
+if(!episodes ||
+episodes.length === 0){
+
+loading.innerHTML =
+'<div class="error">❌ इस anime का कोई episode नहीं है.</div>';
+
+return;
+
+}
+
+
+renderEpisodes(
+episodes
+);
+
+
+let selectedEpisode =
+null;
+
+
+if(episodeId){
+
+selectedEpisode =
+episodes.find(
+episode =>
+String(episode.id) ===
+String(episodeId)
 );
 
 }
+
+
+if(!selectedEpisode){
+
+selectedEpisode =
+episodes[0];
+
+}
+
+
+playEpisode(
+selectedEpisode,
+anime
+);
+
+
+loading.style.display =
+"none";
+
+content.classList.remove(
+"hidden"
+);
+
+}
+
+
+
+/* =========================
+   RENDER EPISODES
+   ========================= */
+
+function renderEpisodes(
+episodes
+){
+
+episodeList.innerHTML =
+"";
+
+
+episodes.forEach(
+episode => {
+
+const button =
+document.createElement(
+"button"
+);
+
+button.className =
+"episode-btn";
+
+
+button.textContent =
+"Episode " +
+episode.episode_number;
+
+
+button.onclick =
+function(){
+
+playEpisode(
+episode,
+null
+);
+
+};
+
+
+button.dataset.id =
+episode.id;
+
+
+episodeList.appendChild(
+button
+);
+
+});
+
+}
+
+
+
+/* =========================
+   PLAY EPISODE
+   ========================= */
+
+function playEpisode(
+episode,
+anime
+){
+
+if(!episode){
+
+return;
+
+}
+
+
+if(!episode.video_url){
+
+message.textContent =
+"❌ इस episode का video URL उपलब्ध नहीं है.";
+
+return;
+
+}
+
+
+video.src =
+episode.video_url;
+
+
+video.load();
+
+
+episodeTitle.textContent =
+"Episode " +
+episode.episode_number +
+(
+episode.title
+? " • " + episode.title
+: ""
+);
+
+
+document
+.querySelectorAll(
+".episode-btn"
+)
+.forEach(
+button => {
+
+button.classList.toggle(
+"active",
+String(button.dataset.id) ===
+String(episode.id)
+);
+
+});
+
+
+message.textContent =
+"";
+
+
+const newUrl =
+"watch.html?id=" +
+encodeURIComponent(
+currentAnimeId
+) +
+"&episode=" +
+encodeURIComponent(
+episode.id
+);
+
+
+window.history.replaceState(
+{},
+"",
+newUrl
+);
+
+}
+
+
+
+/* =========================
+   GET CURRENT USER
+   ========================= */
+
+async function getCurrentUser(){
+
+const {
+data,
+error
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if(error){
+
+console.error(error);
+
+return null;
+
+}
+
+
+return data.user || null;
+
+}
+
+
+
+/* =========================
+   ADD WATCHLIST
+   ========================= */
+
+async function addWatchlist(){
+
+if(!currentAnimeId){
+
+return;
+
+}
+
+
+const user =
+await getCurrentUser();
+
+
+if(!user){
+
+message.textContent =
+"❌ Please login first.";
+
+setTimeout(
+function(){
+
+window.location.href =
+"login.html";
+
+},
+800
+);
+
+return;
+
+}
+
+
+watchlistButton.disabled =
+true;
+
+
+const {
+data:existing,
+error:checkError
+} =
+await supabaseClient
+.from("watchlist")
+.select("id")
+.eq(
+"user_id",
+user.id
+)
+.eq(
+"anime_id",
+currentAnimeId
+)
+.maybeSingle();
+
+
+if(checkError){
+
+console.error(
+checkError
+);
+
+message.textContent =
+"❌ " +
+checkError.message;
+
+watchlistButton.disabled =
+false;
+
+return;
+
+}
+
+
+if(existing){
+
+message.textContent =
+"❤️ Already in your watchlist.";
+
+watchlistButton.textContent =
+"❤️ In Watchlist";
+
+return;
+
+}
+
+
+const {
+error
+} =
+await supabaseClient
+.from("watchlist")
+.insert({
+
+user_id:user.id,
+
+anime_id:currentAnimeId
+
+});
+
+
+if(error){
+
+console.error(error);
+
+message.textContent =
+"❌ " +
+error.message;
+
+watchlistButton.disabled =
+false;
+
+return;
+
+}
+
+
+message.textContent =
+"❤️ Added to your watchlist!";
+
+watchlistButton.textContent =
+"❤️ In Watchlist";
+
+}
+
+
+
+/* =========================
+   START
+   ========================= */
+
+loadWatchPage();
 
 </script>
 
