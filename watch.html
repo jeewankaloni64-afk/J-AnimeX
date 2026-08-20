@@ -157,13 +157,31 @@ background:#ff3b81;
 display:none;
 }
 
+@media(max-width:600px){
+
+.container{
+padding:25px 4%;
+}
+
+h1{
+font-size:27px;
+}
+
+header{
+padding:16px 4%;
+}
+
+.logo{
+font-size:24px;
+}
+
+}
+
 </style>
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -181,10 +199,7 @@ href="index.html">
 
 </header>
 
-
-
 <main class="container">
-
 
 <div
 class="loading"
@@ -194,44 +209,35 @@ Loading episode...
 
 </div>
 
-
-
 <div
 id="content"
 class="hidden">
-
 
 <div class="video-box">
 
 <video
 id="video"
 controls
-playsinline>
+playsinline
+preload="metadata">
 
-Your browser does not support
-video playback.
+Your browser does not support video playback.
 
 </video>
 
 </div>
 
-
-<h1
-id="title">
-</h1>
-
+<h1 id="title"></h1>
 
 <div
 class="episode-title"
 id="episodeTitle">
 </div>
 
-
 <p
 class="description"
 id="description">
 </p>
-
 
 <a
 class="btn secondary"
@@ -242,40 +248,29 @@ href="#">
 
 </a>
 
-
 <button
 class="btn"
-id="watchlistButton"
-onclick="addWatchlist()">
+id="watchlistButton">
 
 ❤️ Add to Watchlist
 
 </button>
-
 
 <div
 class="message"
 id="message">
 </div>
 
-
-
 <div class="episodes">
 
-<h2>
-📺 Episodes
-</h2>
-
+<h2>📺 Episodes</h2>
 
 <div
 class="episode-list"
 id="episodeList">
-
 </div>
 
 </div>
-
-
 
 <div class="note">
 
@@ -287,28 +282,21 @@ permitted video content.
 
 </div>
 
-
 </div>
-
 
 </main>
 
-
-
 <script>
-
 
 /* =========================
    SUPABASE
-   ========================= */
+========================= */
 
 const SUPABASE_URL =
 "https://oytrcupsefiwtasoqaik.supabase.co";
 
-
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
-
 
 const supabaseClient =
 supabase.createClient(
@@ -317,106 +305,108 @@ SUPABASE_PUBLISHABLE_KEY
 );
 
 
-
 /* =========================
    URL PARAMETERS
-   ========================= */
+========================= */
 
 const params =
 new URLSearchParams(
 window.location.search
 );
 
+/*
+   Support multiple parameter names
+*/
 
 const animeId =
-params.get("id");
-
+params.get("id") ||
+params.get("anime_id") ||
+params.get("animeId");
 
 const episodeId =
-params.get("episode");
-
+params.get("episode") ||
+params.get("episode_id") ||
+params.get("episodeId");
 
 
 /* =========================
    ELEMENTS
-   ========================= */
+========================= */
 
 const loading =
-document.getElementById(
-"loading"
-);
+document.getElementById("loading");
 
 const content =
-document.getElementById(
-"content"
-);
+document.getElementById("content");
 
 const video =
-document.getElementById(
-"video"
-);
+document.getElementById("video");
 
 const title =
-document.getElementById(
-"title"
-);
+document.getElementById("title");
 
 const episodeTitle =
-document.getElementById(
-"episodeTitle"
-);
+document.getElementById("episodeTitle");
 
 const description =
-document.getElementById(
-"description"
-);
+document.getElementById("description");
 
 const animeButton =
-document.getElementById(
-"animeButton"
-);
+document.getElementById("animeButton");
 
 const message =
-document.getElementById(
-"message"
-);
+document.getElementById("message");
 
 const episodeList =
-document.getElementById(
-"episodeList"
-);
+document.getElementById("episodeList");
 
 const watchlistButton =
-document.getElementById(
-"watchlistButton"
-);
+document.getElementById("watchlistButton");
 
 
-
-let currentAnimeId =
-null;
-
+let currentAnimeId = null;
+let currentEpisode = null;
 
 
 /* =========================
-   LOAD WATCH PAGE
-   ========================= */
+   MESSAGE
+========================= */
+
+function showMessage(text, error=false){
+
+message.textContent = text;
+
+message.className =
+error
+? "message error"
+: "message";
+
+}
+
+
+/* =========================
+   LOAD ANIME
+========================= */
 
 async function loadWatchPage(){
+
+try{
 
 if(!animeId){
 
 loading.innerHTML =
-'<div class="error">❌ Anime ID नहीं मिला.</div>';
+'<div class="error">❌ Anime ID नहीं मिला।</div>';
 
 return;
 
 }
 
 
+/* Get anime */
+
 const {
-data:anime,
-error
+data: anime,
+error: animeError
 } =
 await supabaseClient
 .from("anime")
@@ -426,19 +416,19 @@ title,
 description,
 poster_url
 `)
-.eq(
-"id",
-animeId
-)
+.eq("id", animeId)
 .maybeSingle();
 
 
-if(error){
+if(animeError){
 
-console.error(error);
+console.error(
+"Anime error:",
+animeError
+);
 
 loading.innerHTML =
-'<div class="error">❌ Anime load नहीं हो पाया.</div>';
+'<div class="error">❌ Anime load नहीं हो पाया।</div>';
 
 return;
 
@@ -448,7 +438,7 @@ return;
 if(!anime){
 
 loading.innerHTML =
-'<div class="error">❌ Anime नहीं मिला.</div>';
+'<div class="error">❌ Anime नहीं मिला।</div>';
 
 return;
 
@@ -470,10 +460,12 @@ anime.description ||
 
 animeButton.href =
 "anime.html?id=" +
-encodeURIComponent(
-anime.id
-);
+encodeURIComponent(anime.id);
 
+
+/*
+   Poster को video poster की तरह use करें
+*/
 
 if(anime.poster_url){
 
@@ -483,30 +475,44 @@ anime.poster_url;
 }
 
 
-await loadEpisodes(
-anime
-);
+/* Load episodes */
+
+await loadEpisodes(anime);
+
+
+/* Check watchlist */
+
+await checkWatchlist();
+
+}
+
+catch(error){
+
+console.error(error);
+
+loading.innerHTML =
+'<div class="error">❌ कुछ गलत हो गया। Console check करें।</div>';
+
+}
 
 }
 
 
-
 /* =========================
    LOAD EPISODES
-   ========================= */
+========================= */
 
-async function loadEpisodes(
-anime
-){
+async function loadEpisodes(anime){
 
 const {
-data:episodes,
+data: episodes,
 error
 } =
 await supabaseClient
 .from("episodes")
 .select(`
 id,
+anime_id,
 episode_number,
 title,
 video_url,
@@ -526,35 +532,39 @@ ascending:true
 
 if(error){
 
-console.error(error);
-
-loading.innerHTML =
-'<div class="error">❌ Episodes load नहीं हो पाए.</div>';
-
-return;
-
-}
-
-
-if(!episodes ||
-episodes.length === 0){
-
-loading.innerHTML =
-'<div class="error">❌ इस anime का कोई episode नहीं है.</div>';
-
-return;
-
-}
-
-
-renderEpisodes(
-episodes
+console.error(
+"Episode error:",
+error
 );
 
+loading.innerHTML =
+'<div class="error">❌ Episodes load नहीं हो पाए।</div>';
 
-let selectedEpisode =
-null;
+return;
 
+}
+
+
+if(!episodes || episodes.length === 0){
+
+loading.innerHTML =
+'<div class="error">❌ इस Anime का कोई episode नहीं है।</div>';
+
+return;
+
+}
+
+
+/* Render buttons */
+
+renderEpisodes(episodes);
+
+
+/*
+   Requested episode find करें
+*/
+
+let selectedEpisode = null;
 
 if(episodeId){
 
@@ -568,6 +578,11 @@ String(episodeId)
 }
 
 
+/*
+   अगर requested episode नहीं मिला
+   तो पहला episode चलाएं
+*/
+
 if(!selectedEpisode){
 
 selectedEpisode =
@@ -576,106 +591,116 @@ episodes[0];
 }
 
 
-playEpisode(
-selectedEpisode,
-anime
-);
+/* Play */
+
+playEpisode(selectedEpisode);
 
 
-loading.style.display =
-"none";
+/* Show content */
 
-content.classList.remove(
-"hidden"
-);
+loading.style.display = "none";
+
+content.classList.remove("hidden");
 
 }
 
 
-
 /* =========================
    RENDER EPISODES
-   ========================= */
+========================= */
 
-function renderEpisodes(
-episodes
-){
+function renderEpisodes(episodes){
 
-episodeList.innerHTML =
-"";
-
+episodeList.innerHTML = "";
 
 episodes.forEach(
 episode => {
 
 const button =
-document.createElement(
-"button"
-);
+document.createElement("button");
+
+button.type = "button";
 
 button.className =
 "episode-btn";
-
 
 button.textContent =
 "Episode " +
 episode.episode_number;
 
-
-button.onclick =
-function(){
-
-playEpisode(
-episode,
-null
-);
-
-};
-
-
 button.dataset.id =
 episode.id;
 
+button.addEventListener(
+"click",
+function(){
 
-episodeList.appendChild(
-button
+playEpisode(episode);
+
+}
 );
+
+episodeList.appendChild(button);
 
 });
 
 }
 
 
-
 /* =========================
    PLAY EPISODE
-   ========================= */
+========================= */
 
-function playEpisode(
-episode,
-anime
-){
+function playEpisode(episode){
 
 if(!episode){
 
+showMessage(
+"❌ Episode नहीं मिला।",
+true
+);
+
 return;
 
 }
 
+
+currentEpisode =
+episode;
+
+
+/*
+   Video URL check
+*/
 
 if(!episode.video_url){
 
-message.textContent =
-"❌ इस episode का video URL उपलब्ध नहीं है.";
+video.removeAttribute("src");
+
+video.load();
+
+episodeTitle.textContent =
+"Episode " +
+episode.episode_number;
+
+showMessage(
+"❌ इस episode का video URL उपलब्ध नहीं है।",
+true
+);
 
 return;
 
 }
 
 
+/*
+   Set video
+*/
+
+video.pause();
+
 video.src =
 episode.video_url;
-
 
 video.load();
 
@@ -690,10 +715,12 @@ episode.title
 );
 
 
+/*
+   Active episode
+*/
+
 document
-.querySelectorAll(
-".episode-btn"
-)
+.querySelectorAll(".episode-btn")
 .forEach(
 button => {
 
@@ -706,20 +733,18 @@ String(episode.id)
 });
 
 
-message.textContent =
-"";
+showMessage("");
 
+
+/*
+   URL update
+*/
 
 const newUrl =
 "watch.html?id=" +
-encodeURIComponent(
-currentAnimeId
-) +
+encodeURIComponent(currentAnimeId) +
 "&episode=" +
-encodeURIComponent(
-episode.id
-);
-
+encodeURIComponent(episode.id);
 
 window.history.replaceState(
 {},
@@ -730,10 +755,31 @@ newUrl
 }
 
 
+/* =========================
+   VIDEO ERROR
+========================= */
+
+video.addEventListener(
+"error",
+function(){
+
+showMessage(
+"❌ Video load नहीं हो पाया। Video URL direct playable होना चाहिए।",
+true
+);
+
+console.error(
+"Video error:",
+video.error
+);
+
+}
+);
+
 
 /* =========================
-   GET CURRENT USER
-   ========================= */
+   GET USER
+========================= */
 
 async function getCurrentUser(){
 
@@ -745,29 +791,96 @@ await supabaseClient
 .auth
 .getUser();
 
-
 if(error){
 
-console.error(error);
+console.error(
+"User error:",
+error
+);
 
 return null;
 
 }
-
 
 return data.user || null;
 
 }
 
 
+/* =========================
+   CHECK WATCHLIST
+========================= */
+
+async function checkWatchlist(){
+
+if(!currentAnimeId){
+
+return;
+
+}
+
+const user =
+await getCurrentUser();
+
+if(!user){
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("watchlist")
+.select("id")
+.eq(
+"user_id",
+user.id
+)
+.eq(
+"anime_id",
+currentAnimeId
+)
+.maybeSingle();
+
+
+if(error){
+
+console.error(
+"Watchlist check error:",
+error
+);
+
+return;
+
+}
+
+
+if(data){
+
+watchlistButton.textContent =
+"❤️ In Watchlist";
+
+}
+
+}
+
 
 /* =========================
    ADD WATCHLIST
-   ========================= */
+========================= */
 
 async function addWatchlist(){
 
 if(!currentAnimeId){
+
+showMessage(
+"❌ Anime ID नहीं मिला।",
+true
+);
 
 return;
 
@@ -780,8 +893,10 @@ await getCurrentUser();
 
 if(!user){
 
-message.textContent =
-"❌ Please login first.";
+showMessage(
+"❌ पहले Login करें।",
+true
+);
 
 setTimeout(
 function(){
@@ -798,8 +913,7 @@ return;
 }
 
 
-watchlistButton.disabled =
-true;
+watchlistButton.disabled = true;
 
 
 const {
@@ -823,15 +937,16 @@ currentAnimeId
 if(checkError){
 
 console.error(
+"Watchlist check:",
 checkError
 );
 
-message.textContent =
-"❌ " +
-checkError.message;
+showMessage(
+"❌ " + checkError.message,
+true
+);
 
-watchlistButton.disabled =
-false;
+watchlistButton.disabled = false;
 
 return;
 
@@ -840,16 +955,23 @@ return;
 
 if(existing){
 
-message.textContent =
-"❤️ Already in your watchlist.";
+showMessage(
+"❤️ यह Anime पहले से Watchlist में है।"
+);
 
 watchlistButton.textContent =
 "❤️ In Watchlist";
+
+watchlistButton.disabled = false;
 
 return;
 
 }
 
+
+/*
+   Add
+*/
 
 const {
 error
@@ -867,38 +989,52 @@ anime_id:currentAnimeId
 
 if(error){
 
-console.error(error);
+console.error(
+"Watchlist insert:",
+error
+);
 
-message.textContent =
-"❌ " +
-error.message;
+showMessage(
+"❌ " + error.message,
+true
+);
 
-watchlistButton.disabled =
-false;
+watchlistButton.disabled = false;
 
 return;
 
 }
 
 
-message.textContent =
-"❤️ Added to your watchlist!";
+showMessage(
+"❤️ Watchlist में add हो गया!"
+);
 
 watchlistButton.textContent =
 "❤️ In Watchlist";
 
+watchlistButton.disabled = false;
+
 }
 
+
+/* =========================
+   BUTTON EVENT
+========================= */
+
+watchlistButton.addEventListener(
+"click",
+addWatchlist
+);
 
 
 /* =========================
    START
-   ========================= */
+========================= */
 
 loadWatchPage();
 
 </script>
-
 
 </body>
 
