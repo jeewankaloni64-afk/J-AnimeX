@@ -192,9 +192,7 @@ font-size:24px;
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -212,10 +210,7 @@ href="index.html">
 
 </header>
 
-
-
 <main class="container">
-
 
 <img
 class="poster"
@@ -225,7 +220,6 @@ alt="Anime Poster"
 style="display:none;"
 >
 
-
 <div
 class="loading"
 id="loading">
@@ -234,43 +228,31 @@ Loading anime...
 
 </div>
 
-
-
 <div
 id="content"
 style="display:none;"
 >
 
-
 <h1
 id="title">
 </h1>
-
-
 
 <div
 class="rating"
 id="rating">
 </div>
 
-
-
 <div
 class="genre"
 id="genre">
 </div>
-
-
 
 <p
 class="description"
 id="description">
 </p>
 
-
-
 <div class="buttons">
-
 
 <button
 class="btn"
@@ -279,7 +261,6 @@ id="watchlistButton">
 ❤️ Add to Watchlist
 
 </button>
-
 
 <a
 class="btn secondary"
@@ -290,85 +271,58 @@ href="#">
 
 </a>
 
-
 </div>
-
-
 
 <div
 class="message"
 id="message">
 </div>
 
-
-
 <div class="info">
-
 
 <h2>
 📖 Anime Information
 </h2>
 
+<p id="year"></p>
 
-<p
-id="year">
+<p id="status"></p>
+
+<p id="episodes">
+🎬 Episodes: Loading...
 </p>
-
-
-<p
-id="status">
-</p>
-
-
-<p
-id="episodes">
-</p>
-
 
 </div>
 
-
-
 <div class="info">
-
 
 <h2>
 📺 Episodes
 </h2>
 
-
 <div
 class="episode-list"
 id="episodeList">
-</div>
-
 
 </div>
 
-
-
 </div>
 
+</div>
 
 </main>
 
-
-
 <script>
-
 
 /* =========================
    SUPABASE
 ========================= */
 
-
 const SUPABASE_URL =
 "https://oytrcupsefiwtasoqaik.supabase.co";
 
-
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__2ItjvEKIYpg7w8iX2-Qzw_siS9P-Ba";
-
 
 const supabaseClient =
 supabase.createClient(
@@ -377,120 +331,71 @@ SUPABASE_PUBLISHABLE_KEY
 );
 
 
-
 /* =========================
    GET ANIME ID
 ========================= */
-
 
 const params =
 new URLSearchParams(
 window.location.search
 );
 
-
 const animeId =
 params.get("id");
-
 
 
 /* =========================
    ELEMENTS
 ========================= */
 
-
 const loading =
-document.getElementById(
-"loading"
-);
-
+document.getElementById("loading");
 
 const content =
-document.getElementById(
-"content"
-);
-
+document.getElementById("content");
 
 const poster =
-document.getElementById(
-"poster"
-);
-
+document.getElementById("poster");
 
 const title =
-document.getElementById(
-"title"
-);
-
+document.getElementById("title");
 
 const rating =
-document.getElementById(
-"rating"
-);
-
+document.getElementById("rating");
 
 const genre =
-document.getElementById(
-"genre"
-);
-
+document.getElementById("genre");
 
 const description =
-document.getElementById(
-"description"
-);
-
+document.getElementById("description");
 
 const year =
-document.getElementById(
-"year"
-);
-
+document.getElementById("year");
 
 const status =
-document.getElementById(
-"status"
-);
-
+document.getElementById("status");
 
 const episodes =
-document.getElementById(
-"episodes"
-);
-
+document.getElementById("episodes");
 
 const watchButton =
-document.getElementById(
-"watchButton"
-);
-
+document.getElementById("watchButton");
 
 const message =
-document.getElementById(
-"message"
-);
-
+document.getElementById("message");
 
 const watchlistButton =
-document.getElementById(
-"watchlistButton"
-);
-
+document.getElementById("watchlistButton");
 
 const episodeList =
-document.getElementById(
-"episodeList"
-);
-
+document.getElementById("episodeList");
 
 
 /* =========================
    LOAD ANIME
 ========================= */
 
-
 async function loadAnime(){
-
 
 if(!animeId){
 
@@ -501,7 +406,7 @@ return;
 
 }
 
-
+try{
 
 const {
 data,
@@ -517,15 +422,13 @@ genre,
 rating,
 release_year,
 poster_url,
-status,
-episodes
+status
 `)
 .eq(
 "id",
 animeId
 )
 .maybeSingle();
-
 
 
 if(error){
@@ -536,12 +439,13 @@ error
 );
 
 loading.innerHTML =
-'<div class="error">❌ Anime load नहीं हो पाया.</div>';
+'<div class="error">❌ Anime load नहीं हो पाया.<br><small>' +
+error.message +
+'</small></div>';
 
 return;
 
 }
-
 
 
 if(!data){
@@ -554,58 +458,36 @@ return;
 }
 
 
-
 /* =========================
-   ANIME INFORMATION
+   ANIME DATA
 ========================= */
-
 
 title.textContent =
 data.title || "Untitled";
-
 
 rating.textContent =
 "⭐ " +
 (data.rating ?? "N/A");
 
-
 genre.textContent =
 data.genre || "Unknown";
-
 
 description.textContent =
 data.description ||
 "Information coming soon.";
 
-
 year.textContent =
 "📅 Year: " +
 (data.release_year || "N/A");
-
 
 status.textContent =
 "📌 Status: " +
 (data.status || "N/A");
 
 
-/*
-   Initially show database
-   episode value.
-   Later actual episode count
-   will be loaded from episodes table.
-*/
-
-
-episodes.textContent =
-"🎬 Episodes: " +
-(data.episodes || "Loading...");
-
-
-
 /* =========================
    POSTER
 ========================= */
-
 
 if(data.poster_url){
 
@@ -621,22 +503,18 @@ poster.style.display =
 }
 
 
-
 /* =========================
    WATCH BUTTON
 ========================= */
-
 
 watchButton.href =
 "watch.html?id=" +
 encodeURIComponent(data.id);
 
 
-
 /* =========================
    SHOW CONTENT
 ========================= */
-
 
 loading.style.display =
 "none";
@@ -645,35 +523,43 @@ content.style.display =
 "block";
 
 
-
 /* =========================
    LOAD EPISODES
 ========================= */
 
-
 await loadEpisodes(data);
-
 
 
 /* =========================
    CHECK WATCHLIST
 ========================= */
 
-
 await checkWatchlist();
-
 
 }
 
+catch(error){
+
+console.error(
+"Unexpected error:",
+error
+);
+
+loading.innerHTML =
+'<div class="error">❌ Anime load नहीं हो पाया.<br><small>' +
+error.message +
+'</small></div>';
+
+}
+
+}
 
 
 /* =========================
    LOAD EPISODES
 ========================= */
 
-
 async function loadEpisodes(anime){
-
 
 const {
 data:episodeData,
@@ -701,7 +587,6 @@ ascending:true
 );
 
 
-
 if(error){
 
 console.error(
@@ -709,18 +594,17 @@ console.error(
 error
 );
 
+episodes.textContent =
+"🎬 Episodes: Error";
+
 episodeList.innerHTML =
-'<p class="error">❌ Episodes load नहीं हो पाए.</p>';
+'<p class="error">❌ Episodes load नहीं हो पाए.<br><small>' +
+error.message +
+'</small></p>';
 
 return;
 
 }
-
-
-
-/* =========================
-   NO EPISODES
-========================= */
 
 
 if(
@@ -728,81 +612,56 @@ if(
 episodeData.length === 0
 ){
 
-episodeList.innerHTML =
-'<p class="message">इस Anime का अभी कोई episode नहीं है.</p>';
-
 episodes.textContent =
 "🎬 Episodes: 0";
+
+episodeList.innerHTML =
+'<p class="message">इस Anime का अभी कोई episode नहीं है.</p>';
 
 return;
 
 }
 
 
-
 /* =========================
-   REAL EPISODE COUNT
+   EPISODE COUNT
 ========================= */
-
 
 episodes.textContent =
 "🎬 Episodes: " +
 episodeData.length;
 
 
-
 /* =========================
    CLEAR LIST
 ========================= */
 
-
 episodeList.innerHTML =
 "";
-
 
 
 /* =========================
    CREATE EPISODE BUTTONS
 ========================= */
 
-
 episodeData.forEach(
 episode => {
 
-
 const button =
-document.createElement(
-"a"
-);
-
+document.createElement("a");
 
 button.className =
 "episode-btn";
 
-
 button.textContent =
 "Episode " +
 episode.episode_number;
-
-
-/*
-   Open watch page with
-   anime ID + episode ID
-*/
-
 
 button.href =
 "watch.html?id=" +
 encodeURIComponent(anime.id) +
 "&episode=" +
 encodeURIComponent(episode.id);
-
-
-
-/*
-   Optional title
-*/
-
 
 if(episode.title){
 
@@ -811,26 +670,20 @@ episode.title;
 
 }
 
-
 episodeList.appendChild(
 button
 );
 
-
 });
 
-
 }
-
 
 
 /* =========================
    GET CURRENT USER
 ========================= */
 
-
 async function getCurrentUser(){
-
 
 const {
 data,
@@ -839,8 +692,6 @@ error
 await supabaseClient
 .auth
 .getUser();
-
-
 
 if(error){
 
@@ -853,21 +704,16 @@ return null;
 
 }
 
-
 return data.user || null;
 
-
 }
-
 
 
 /* =========================
    ADD WATCHLIST
 ========================= */
 
-
 async function addWatchlist(){
-
 
 if(!animeId){
 
@@ -875,18 +721,13 @@ return;
 
 }
 
-
-
 const user =
 await getCurrentUser();
-
-
 
 if(!user){
 
 message.textContent =
 "❌ पहले Login करें.";
-
 
 setTimeout(
 function(){
@@ -898,25 +739,15 @@ window.location.href =
 1000
 );
 
-
 return;
 
 }
 
-
-
 watchlistButton.disabled =
 true;
 
-
 message.textContent =
 "Adding to watchlist...";
-
-
-
-/* =========================
-   CHECK EXISTING
-========================= */
 
 
 const {
@@ -935,7 +766,6 @@ user.id
 animeId
 )
 .maybeSingle();
-
 
 
 if(checkError){
@@ -957,36 +787,25 @@ return;
 }
 
 
-
-/* =========================
-   ALREADY EXISTS
-========================= */
-
-
 if(existing){
 
 message.textContent =
 "❤️ Already in your watchlist.";
 
-
 watchlistButton.textContent =
 "❤️ In Watchlist";
 
-
 watchlistButton.disabled =
 true;
-
 
 return;
 
 }
 
 
-
 /* =========================
-   INSERT
+   INSERT WATCHLIST
 ========================= */
-
 
 const {
 error
@@ -1000,7 +819,6 @@ user_id:user.id,
 anime_id:animeId
 
 });
-
 
 
 if(error){
@@ -1022,35 +840,23 @@ return;
 }
 
 
-
-/* =========================
-   SUCCESS
-========================= */
-
-
 message.textContent =
 "❤️ Added to your watchlist!";
-
 
 watchlistButton.textContent =
 "❤️ In Watchlist";
 
-
 watchlistButton.disabled =
 true;
 
-
 }
-
 
 
 /* =========================
    CHECK WATCHLIST
 ========================= */
 
-
 async function checkWatchlist(){
-
 
 if(!animeId){
 
@@ -1058,20 +864,14 @@ return;
 
 }
 
-
-
 const user =
 await getCurrentUser();
-
-
 
 if(!user){
 
 return;
 
 }
-
-
 
 const {
 data,
@@ -1091,7 +891,6 @@ animeId
 .maybeSingle();
 
 
-
 if(error){
 
 console.error(
@@ -1104,27 +903,22 @@ return;
 }
 
 
-
 if(data){
 
 watchlistButton.textContent =
 "❤️ In Watchlist";
-
 
 watchlistButton.disabled =
 true;
 
 }
 
-
 }
-
 
 
 /* =========================
    BUTTON EVENT
 ========================= */
-
 
 watchlistButton.addEventListener(
 "click",
@@ -1132,17 +926,13 @@ addWatchlist
 );
 
 
-
 /* =========================
    START
 ========================= */
 
-
 loadAnime();
 
-
 </script>
-
 
 </body>
 
