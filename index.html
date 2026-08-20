@@ -279,6 +279,20 @@ color:#888;
 margin-top:20px;
 }
 
+.footer-links{
+margin-top:15px;
+}
+
+.footer-links a{
+color:#ff3b81;
+text-decoration:none;
+margin:0 8px;
+}
+
+.footer-links a:hover{
+text-decoration:underline;
+}
+
 @media(max-width:700px){
 
 header{
@@ -577,6 +591,14 @@ All
 
 © 2026 J-AnimeX
 
+<div class="footer-links">
+
+<a href="privacy.html">
+🔒 Privacy Policy
+</a>
+
+</div>
+
 </footer>
 
 
@@ -606,7 +628,9 @@ let allAnime = [];
 function toggleMenu(){
 
 const nav =
-document.getElementById("nav");
+document.getElementById(
+"nav"
+);
 
 nav.classList.toggle("active");
 
@@ -1222,4 +1246,4 @@ loadLatestEpisodes();
 
 </body>
 
-</html>
+  </html>
